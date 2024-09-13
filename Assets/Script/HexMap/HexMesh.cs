@@ -15,10 +15,10 @@ public class HexMesh : MonoBehaviour
 {
     private Mesh hexMesh;
 
-    [NonSerialized] private static List<Vector3> verticies;
-    [NonSerialized] private static List<int> indBuffer;
-    [NonSerialized] private static List<Color> colors;
-    [NonSerialized] private static List<Vector2> uvs;
+    [NonSerialized] private List<Vector3> verticies;
+    [NonSerialized] private List<int> indBuffer;
+    [NonSerialized] private List<Color> colors;
+    [NonSerialized] private List<Vector2> uvs;
 
     private MeshCollider meshCollider;
 
