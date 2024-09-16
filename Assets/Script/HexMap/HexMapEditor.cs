@@ -79,16 +79,33 @@ public class HexMapEditor : MonoBehaviour
         if(isApplyElevation)
             cell.Elevation = activeElevation;
 
+        if (isApplyWaterLevel)
+            cell.WaterLevel = activeWaterLevel;
+        
         if (riverMode == OptionalToggle.No)
         {
             cell.RemoveRiver();
         }
-        else if (isDrag && riverMode == OptionalToggle.Yes)
+
+        if (roadMode == OptionalToggle.No)
+        {
+            cell.RemoveRoads();
+        }
+        
+        if (isDrag)
         {
             HexCell otherCell = cell.GetNeighbor(dragDir.Opposite());
             if (otherCell)
             {
-                otherCell.SetOutgoingRiver(dragDir);   
+                if (riverMode == OptionalToggle.Yes)
+                {
+                    otherCell.SetOutgoingRiver(dragDir);
+                }
+
+                if (roadMode == OptionalToggle.Yes)
+                {
+                    otherCell.AddRoad(dragDir);
+                }
             }
         }
             
@@ -125,6 +142,21 @@ public class HexMapEditor : MonoBehaviour
     {
         riverMode = (OptionalToggle)mode;
     }
+    
+    public void SetRoadMode(int mode)
+    {
+        roadMode = (OptionalToggle)mode;
+    }
+
+    public void SetApplyWaterLevel(bool toggle)
+    {
+        isApplyWaterLevel = toggle;
+    }
+
+    public void SetWaterLevel(float level)
+    {
+        activeWaterLevel = (int)level;
+    }
 
     void ValidateDrag(HexCell currentCell)
     {
@@ -145,13 +177,14 @@ public class HexMapEditor : MonoBehaviour
 
     private Color activeColor;
     
-    private int activeElevation;
+    private int activeElevation, activeWaterLevel;
     private int brushSize;
 
     private bool isApplyColor;
     private bool isApplyElevation;
+    private bool isApplyWaterLevel;
 
-    private OptionalToggle riverMode;
+    private OptionalToggle riverMode, roadMode;
 
     private bool isDrag;
     private HexDirection dragDir;
