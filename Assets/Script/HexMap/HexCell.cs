@@ -157,6 +157,7 @@ public class HexCell : MonoBehaviour
         {
             if (waterLevel == value)
                 return;
+            
             waterLevel = value;
             Refresh();
         }

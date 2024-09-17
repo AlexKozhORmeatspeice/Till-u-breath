@@ -95,6 +95,21 @@ public class HexMesh : MonoBehaviour
         indBuffer.Add(vertexIndex + 2);
         indBuffer.Add(vertexIndex + 3);
     }
+    public void AddQuadUnperturbed(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4)
+    {
+        int vertexIndex = verticies.Count;
+        verticies.Add((v1));
+        verticies.Add((v2));
+        verticies.Add((v3));
+        verticies.Add((v4));
+        
+        indBuffer.Add(vertexIndex);
+        indBuffer.Add(vertexIndex + 2);
+        indBuffer.Add(vertexIndex + 1);
+        indBuffer.Add(vertexIndex + 1);
+        indBuffer.Add(vertexIndex + 2);
+        indBuffer.Add(vertexIndex + 3);
+    }
 
     public void AddQuadColor(Color c1, Color c2)
     {

@@ -9,7 +9,7 @@ Shader "Custom/River"
     }
     SubShader
     {
-        Tags { "RenderType"="Transparent" "Queue"="Transparent"}
+        Tags { "RenderType"="Transparent" "Queue"="Transparent+1"}
 
         CGPROGRAM
         #pragma surface surf Standard alpha

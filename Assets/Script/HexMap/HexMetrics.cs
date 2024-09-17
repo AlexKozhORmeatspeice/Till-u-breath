@@ -35,6 +35,20 @@ namespace Script
             return corners[(int)dir + 1];
         }
 
+        public static Vector3 GetFirstWaterCorner(HexDirection dir)
+        {
+            return corners[(int)dir] * waterFactor;
+        }
+        public static Vector3 GetSecondWaterCorner(HexDirection dir)
+        {
+            return corners[(int)dir + 1] * waterFactor;
+        }
+
+        public static Vector3 GetWaterBridge(HexDirection dir)
+        {
+            return (corners[(int)dir] + corners[(int)dir + 1]) * waterBlendFactor;
+        }
+
         public static Vector3 GetBridge(HexDirection dir)
         {
             return (corners[(int)dir] + corners[(int)dir + 1]) * blendFactor;
@@ -112,5 +126,7 @@ namespace Script
 
         public const float streamBedElevationOffset = -1.75f;
         public const float waterElevationOffset = -0.5f;
+        public const float waterFactor = 0.5f;
+        public const float waterBlendFactor = 1.0f - waterFactor;
     }
 }
