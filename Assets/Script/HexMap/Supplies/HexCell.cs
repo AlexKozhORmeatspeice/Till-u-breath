@@ -1,29 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Script;
 using UnityEngine;
 
 public class HexCell : MonoBehaviour
 {
-    [SerializeField] private HexCell[] neighbors;
-    [SerializeField] private bool[] roads;
-    private int elevation = int.MinValue;
-    
-    private int waterLevel;
-    private int urbanLevel, farmLevel, plantLevel;
-    
-    public RectTransform uiRect;
-    public HexGridChunk chunk;
-
-    public HexCoordinates coordinates;
-
-    private Color color;
-    private HexFeatureCollection featureCollection;
-
-    private bool hasIncomingRiver, hasOutgoingRiver;
-    private HexDirection incomingRiver, outgoingRiver;
 
     public bool HasIncomingRiver => hasIncomingRiver;
     public bool HasOutgoingRiver => hasOutgoingRiver;
@@ -74,23 +58,22 @@ public class HexCell : MonoBehaviour
 
     public Color Color
     {
-        get { return color; }
-        set
-        {
-            if (color == value)
-                return;
-            color = value;
-            Refresh();
-        }
+        get { return HexMetrics.colors[terrainTypeInd]; }
     }
-    
-    public HexFeatureCollection FeatureCollection
+
+    public int TerrainTypeInd
     {
-        get { return featureCollection; }
+        get
+        {
+            return terrainTypeInd;
+        }
         set
         {
-            featureCollection = value;
-            Refresh();
+            if (terrainTypeInd != value)
+            {
+                terrainTypeInd = value;
+                Refresh();
+            }
         }
     }
 
@@ -118,48 +101,26 @@ public class HexCell : MonoBehaviour
         }
     }
 
-    public int UrbanLevel
+    public int FeatureLevel
     {
-        get
-        {
-            return urbanLevel;
-        }
+        get { return featureLevel; }
         set
         {
-            if (UrbanLevel != value)
+            if (FeatureLevel != value)
             {
-                urbanLevel = value;
+                featureLevel = value;
                 RefreshSelfOnly();
             }
         }
     }
-    public int FarmLevel
+    public int FeatureCollectionInd
     {
-        get
-        {
-            return farmLevel;
-        }
+        get { return featureCollectionInd; }
         set
         {
-            if (farmLevel != value)
+            if (featureCollectionInd != value)
             {
-                farmLevel = value;
-                RefreshSelfOnly();
-            }
-        }
-    }
-    
-    public int PlantLevel
-    {
-        get
-        {
-            return plantLevel;
-        }
-        set
-        {
-            if (plantLevel != value)
-            {
-                plantLevel = value;
+                featureCollectionInd = value;
                 RefreshSelfOnly();
             }
         }
@@ -368,4 +329,96 @@ public class HexCell : MonoBehaviour
         int d = Mathf.Abs(elevation - GetNeighbor(dir).elevation);
         return d;
     }
+
+    public void Save(BinaryWriter writer)
+    {
+        writer.Write((byte)terrainTypeInd);
+        writer.Write((byte)elevation);
+        writer.Write((byte)waterLevel);
+        writer.Write((byte)featureLevel);
+        writer.Write((byte)featureCollectionInd);
+
+        if (hasIncomingRiver)
+        {
+            writer.Write((byte)(incomingRiver + 128));
+        }
+        else
+        {
+            writer.Write((byte)0);
+        }
+        
+        if (HasOutgoingRiver)
+        {
+            writer.Write((byte)(outgoingRiver + 128));
+        }
+        else
+        {
+            writer.Write((byte)0);
+        }
+
+        int roadFlags = 0;
+        for (int i = 0; i < roads.Length; i++)
+        {
+            if (roads[i])
+            {
+                roadFlags |= 1 << i;
+            }
+        }
+        writer.Write((byte)roadFlags);
+    }
+    
+    public void Load(BinaryReader reader)
+    {
+        terrainTypeInd = reader.ReadByte();
+        Elevation = reader.ReadByte();
+        WaterLevel = reader.ReadByte();
+        FeatureLevel = reader.ReadByte();
+        FeatureCollectionInd = reader.ReadByte();
+
+        byte riverData = reader.ReadByte();
+        if (riverData >= 128)
+        {
+            hasIncomingRiver = true;
+            incomingRiver = (HexDirection)(riverData - 128);
+        }
+        else
+        {
+            hasIncomingRiver = false;
+        }
+        
+        riverData = reader.ReadByte();
+        if (riverData >= 128)
+        {
+            hasOutgoingRiver = true;
+            outgoingRiver = (HexDirection)(riverData - 128);
+        }
+        else
+        {
+            hasOutgoingRiver = false;
+        }
+
+        int roadFlags = reader.ReadByte();
+        for (int i = 0; i < roads.Length; i++)
+        {
+            roads[i] = (roadFlags & (1 << i)) != 0;
+        }
+    }
+    
+    [SerializeField] private HexCell[] neighbors;
+    [SerializeField] private bool[] roads;
+    private int elevation = int.MinValue;
+    
+    private int waterLevel;
+    private int featureLevel;
+    
+    public RectTransform uiRect;
+    public HexGridChunk chunk;
+
+    public HexCoordinates coordinates;
+    
+    private int terrainTypeInd;
+    private int featureCollectionInd;
+
+    private bool hasIncomingRiver, hasOutgoingRiver;
+    private HexDirection incomingRiver, outgoingRiver;
 }

@@ -169,6 +169,9 @@ namespace Script
             new float[] { 0.4f, 0.6f, 0.8f }
         };
 
+        public static Color[] colors;
+        public static HexFeatureCollection[] featureCollections;
+        
         public static float[] GetFeatureThreshold(int level)
         {
             return featureThresholds[level];

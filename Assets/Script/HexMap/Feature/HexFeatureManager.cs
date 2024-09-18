@@ -29,7 +29,7 @@ public class HexFeatureManager : MonoBehaviour
     public void AddFeature(HexCell cell, Vector3 pos)
     {
         HexHash hash = HexMetrics.SampleHashGrid(pos);
-        Transform prefab = PickPrefab(cell.UrbanLevel, hash.a, hash.d);
+        Transform prefab = PickPrefab(cell.FeatureLevel, hash.a, hash.d);
         if (!prefab)
             return;
 

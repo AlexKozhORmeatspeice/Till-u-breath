@@ -5,24 +5,29 @@ using Script;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.IO;
 
 public class HexMapEditor : MonoBehaviour
 {
     private void Awake()
     {
+        dataPath = Application.persistentDataPath;
         isApplyElevation = true;
-        SelectColor(0);
         
+    }
+
+    private void Start()
+    {
         dropdownFeature.onValueChanged.AddListener(FeaturesIsChanged);
         
         dropdownFeature.options.Clear();
-        foreach (HexFeatureCollection feature in featureCollections)
+        foreach (HexFeatureCollection feature in HexMetrics.featureCollections)
         {
             dropdownFeature.options.Add(new TMPro.TMP_Dropdown.OptionData() { text = feature.name });
         }
         FeaturesIsChanged(0);
     }
-    
+
     private void Update()
     {
         if (Input.GetMouseButton(0) &&
@@ -82,9 +87,9 @@ public class HexMapEditor : MonoBehaviour
     {
         if (!cell)
             return;
-        
-        if(isApplyColor)
-            cell.Color = activeColor;
+
+        if (activeTerrainTypeIndex >= 0)
+            cell.TerrainTypeInd = activeTerrainTypeIndex;
         
         if(isApplyElevation)
             cell.Elevation = activeElevation;
@@ -94,8 +99,8 @@ public class HexMapEditor : MonoBehaviour
 
         if (isApplyFeature)
         {
-            cell.FeatureCollection = activeFeatureCollection;
-            cell.UrbanLevel = featureLevel;
+            cell.FeatureCollectionInd = activeFeatureColectionIndex;
+            cell.FeatureLevel = featureLevel;
         }
 
         if (riverMode == OptionalToggle.No)
@@ -127,13 +132,6 @@ public class HexMapEditor : MonoBehaviour
             
     }
     
-    public void SelectColor(int ind)
-    {
-        isApplyColor = ind >= 0;
-        if(isApplyColor)
-            activeColor = colors[ind];
-    }
-
     public void SetElevationLevel(float elevation)
     {
         activeElevation = (int)elevation;
@@ -184,6 +182,11 @@ public class HexMapEditor : MonoBehaviour
         featureLevel = (int)level;
     }
 
+    public void SetTerrainTypeIndex(int index)
+    {
+        activeTerrainTypeIndex = index;
+    }
+
     void ValidateDrag(HexCell currentCell)
     {
         for (dragDir = HexDirection.NE; dragDir < HexDirection.NW; dragDir++)
@@ -200,45 +203,66 @@ public class HexMapEditor : MonoBehaviour
     
     private void FeaturesIsChanged(int i)
     {
-        activeFeatureCollection = featureCollections[i];
-        sliderFeature.maxValue = activeFeatureCollection.Length;
+        activeFeatureColectionIndex = i;
+        
+        sliderFeature.maxValue = HexMetrics.featureCollections[activeFeatureColectionIndex].Length;
+    }
+
+    public void Save()
+    {
+        string path = Path.Combine(dataPath, fileName);
+        Debug.Log(path);
+        using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
+        {
+            writer.Write(0);
+            grid.Save(writer);
+        }
+        
     }
     
-    [SerializeField] private HexFeatureCollection[] featureCollections;
+    public void Load()
+    {
+        string path = Path.Combine(dataPath, fileName);
+        using (BinaryReader reader = new BinaryReader(File.OpenRead(path)))
+        {
+            int header = reader.ReadInt32();
+            if (header != 0)
+            {
+                Debug.Log("Unknown format for map");
+            }
+            else
+            {
+                grid.Load(reader);
+            }
+        }
+    }
 
-    [SerializeField] private Color[] colors;
     [SerializeField] private HexGrid grid;
     [SerializeField] private Transform chunkPrefab;
     [SerializeField] private TMPro.TMP_Dropdown dropdownFeature;
     [SerializeField] private Slider sliderFeature;
 
+    private int activeTerrainTypeIndex;
+    
+    private int activeFeatureColectionIndex;
     private bool isApplyFeature = true;
     private int featureLevel;
-    private HexFeatureCollection activeFeatureCollection;
-    
-    private Color activeColor;
-    
-    private int activeElevation, activeWaterLevel;
-    private int brushSize;
 
-    private bool isApplyColor = true;
+    private int activeElevation, activeWaterLevel;
     private bool isApplyElevation = true;
     private bool isApplyWaterLevel = true;
+    
+    private int brushSize;
 
     private OptionalToggle riverMode, roadMode;
 
     private bool isDrag;
     private HexDirection dragDir;
     private HexCell prevCell;
-    
-    
-    
-    public HexFeatureCollection[] FeatureCollections
-    {
-        get => featureCollections;
-    }
-    
+
     private HexFeatureManager featureManager;
+    private string dataPath;
+    private const string fileName = "test.map";
 }
 
 enum OptionalToggle

@@ -67,7 +67,7 @@ public class HexGridChunk : MonoBehaviour
 
     private void Triangulate(HexCell cell)
     {
-        HexFeatureManager.SetFeature(cell.FeatureCollection);
+        HexFeatureManager.SetFeature(HexMetrics.featureCollections[cell.FeatureCollectionInd]);
         for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
         {
             Triangulate(d, cell);
