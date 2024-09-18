@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Script;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class HexMapEditor : MonoBehaviour
 {
@@ -11,6 +12,15 @@ public class HexMapEditor : MonoBehaviour
     {
         isApplyElevation = true;
         SelectColor(0);
+        
+        dropdownFeature.onValueChanged.AddListener(FeaturesIsChanged);
+        
+        dropdownFeature.options.Clear();
+        foreach (HexFeatureCollection feature in featureCollections)
+        {
+            dropdownFeature.options.Add(new TMPro.TMP_Dropdown.OptionData() { text = feature.name });
+        }
+        FeaturesIsChanged(0);
     }
     
     private void Update()
@@ -81,7 +91,13 @@ public class HexMapEditor : MonoBehaviour
 
         if (isApplyWaterLevel)
             cell.WaterLevel = activeWaterLevel;
-        
+
+        if (isApplyFeature)
+        {
+            cell.FeatureCollection = activeFeatureCollection;
+            cell.UrbanLevel = featureLevel;
+        }
+
         if (riverMode == OptionalToggle.No)
         {
             cell.RemoveRiver();
@@ -147,7 +163,7 @@ public class HexMapEditor : MonoBehaviour
     {
         roadMode = (OptionalToggle)mode;
     }
-
+    
     public void SetApplyWaterLevel(bool toggle)
     {
         isApplyWaterLevel = toggle;
@@ -156,6 +172,16 @@ public class HexMapEditor : MonoBehaviour
     public void SetWaterLevel(float level)
     {
         activeWaterLevel = (int)level;
+    }
+    
+    public void SetApplyUrbanLevel(bool toggle)
+    {
+        isApplyFeature = toggle;
+    }
+
+    public void SetUrbanLevel(float level)
+    {
+        featureLevel = (int)level;
     }
 
     void ValidateDrag(HexCell currentCell)
@@ -172,15 +198,30 @@ public class HexMapEditor : MonoBehaviour
         }
     }
     
+    private void FeaturesIsChanged(int i)
+    {
+        activeFeatureCollection = featureCollections[i];
+        sliderFeature.maxValue = activeFeatureCollection.Length;
+    }
+    
+    [SerializeField] private HexFeatureCollection[] featureCollections;
+
     [SerializeField] private Color[] colors;
     [SerializeField] private HexGrid grid;
+    [SerializeField] private Transform chunkPrefab;
+    [SerializeField] private TMPro.TMP_Dropdown dropdownFeature;
+    [SerializeField] private Slider sliderFeature;
 
+    private bool isApplyFeature = true;
+    private int featureLevel;
+    private HexFeatureCollection activeFeatureCollection;
+    
     private Color activeColor;
     
     private int activeElevation, activeWaterLevel;
     private int brushSize;
 
-    private bool isApplyColor = false;
+    private bool isApplyColor = true;
     private bool isApplyElevation = true;
     private bool isApplyWaterLevel = true;
 
@@ -189,6 +230,15 @@ public class HexMapEditor : MonoBehaviour
     private bool isDrag;
     private HexDirection dragDir;
     private HexCell prevCell;
+    
+    
+    
+    public HexFeatureCollection[] FeatureCollections
+    {
+        get => featureCollections;
+    }
+    
+    private HexFeatureManager featureManager;
 }
 
 enum OptionalToggle

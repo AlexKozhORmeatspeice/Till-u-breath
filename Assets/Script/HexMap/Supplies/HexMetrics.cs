@@ -101,6 +101,35 @@ namespace Script
             return (corners[(int)dir] + corners[(int)dir + 1]) * (0.5f * solidFactor);
         }
 
+        public static void InitializeHashGrid(int seed)
+        {
+            hashGrid = new HexHash[hashGridSize * hashGridSize];
+            Random.State curState = Random.state;
+            Random.InitState(seed);
+            for (int i = 0; i < hashGrid.Length; i++)
+            {
+                hashGrid[i] = HexHash.Create();
+            }
+
+            Random.state = curState;
+        }
+
+        public static HexHash SampleHashGrid(Vector3 pos)
+        {
+            int x = (int)(pos.x * hashGridScale) % hashGridSize;
+            if (x < 0)
+            {
+                x += hashGridSize;
+            }
+            
+            int z = (int)(pos.z * hashGridScale) % hashGridSize;
+            if (z < 0)
+            {
+                z += hashGridSize;
+            }
+            return hashGrid[x + z * hashGridSize];
+        }
+
         public const int chunkSizeX = 5, chunkSizeZ = 5;
 
         public const float outerToInner = 0.866025404f;
@@ -128,5 +157,21 @@ namespace Script
         public const float waterElevationOffset = -0.5f;
         public const float waterFactor = 0.5f;
         public const float waterBlendFactor = 1.0f - waterFactor;
+
+        public const int hashGridSize = 256;
+        public const float hashGridScale = 0.25f;
+        private static HexHash[] hashGrid;
+
+        private static float[][] featureThresholds =
+        {
+            new float[] { 0.0f, 0.0f, 0.4f },
+            new float[] { 0.0f, 0.4f, 0.6f },
+            new float[] { 0.4f, 0.6f, 0.8f }
+        };
+
+        public static float[] GetFeatureThreshold(int level)
+        {
+            return featureThresholds[level];
+        }
     }
 }

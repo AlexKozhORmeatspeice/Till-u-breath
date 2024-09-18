@@ -25,14 +25,22 @@ public class HexGrid : MonoBehaviour
     public HexGridChunk chunkPrefab;
     private HexGridChunk[] chunks;
 
+    public int seed;
+
     void OnEnable()
     {
-        HexMetrics.noiseSource = noiseSource;
+        if (!HexMetrics.noiseSource)
+        {
+            HexMetrics.noiseSource = noiseSource;
+            HexMetrics.InitializeHashGrid(seed);
+        }
+        
     }
     private void Awake()
     {
         HexMetrics.noiseSource = noiseSource;
-
+        HexMetrics.InitializeHashGrid(seed);
+        
         cellCountX = chunkCountX * HexMetrics.chunkSizeX;
         cellCountZ = chunkCountZ * HexMetrics.chunkSizeZ;
 

@@ -11,7 +11,9 @@ public class CameraControl : MonoBehaviour
 
     [SerializeField] private float minOrtSize;
     [SerializeField] private float maxOrtSize;
-
+    [SerializeField] private float maxAngle = Mathf.PI / 4.0f;
+    [SerializeField] private float minAngle = Mathf.PI / 2.0f;
+    
     [SerializeField] private float rotateSpeed = 30f;
     private float rotAngle;
     [SerializeField] private float moveSpeedMinZoom = 400f;
@@ -53,6 +55,9 @@ public class CameraControl : MonoBehaviour
     void AdjustZoom(float delta)
     {
         zoom = Mathf.Clamp01(zoom + delta);
+
+        float angle = Mathf.Lerp(minAngle, maxAngle, zoom);
+        camera.transform.localRotation = Quaternion.Euler(angle * Mathf.Rad2Deg, 0.0f, 0.0f);
         
         float ortSize = Mathf.Lerp(minOrtSize, maxOrtSize, zoom);
         camera.orthographicSize = ortSize;

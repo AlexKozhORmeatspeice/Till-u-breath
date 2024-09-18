@@ -1,6 +1,7 @@
 ﻿using System;
 using Script;
 using TMPro.Examples;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,6 +10,7 @@ public class HexGridChunk : MonoBehaviour
     private HexCell[] cells;
 
     public HexMesh terrain, rivers, roads, water, waterShore;
+    public HexFeatureManager features;
     private Canvas canvas;
 
     private void Awake()
@@ -50,6 +52,7 @@ public class HexGridChunk : MonoBehaviour
         roads.Clear();
         water.Clear(); 
         waterShore.Clear();
+        features.Clear();
         for (int i = 0; i < cells.Length; i++)
         {
             Triangulate(cells[i]);
@@ -59,14 +62,19 @@ public class HexGridChunk : MonoBehaviour
         roads.Apply();
         water.Apply();
         waterShore.Apply();
+        features.Apply();
     }
 
     private void Triangulate(HexCell cell)
     {
+        HexFeatureManager.SetFeature(cell.FeatureCollection);
         for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
         {
             Triangulate(d, cell);
         }
+        
+        if(!cell.IsUnderwater && !cell.HasRiver && !cell.HasRoad)
+            features.AddFeature(cell, cell.Position);
     }
 
     private void Triangulate(HexDirection dir, HexCell cell)
@@ -100,6 +108,9 @@ public class HexGridChunk : MonoBehaviour
         else
         {
             TriangulateWithoutRiver(dir, cell, center, e);
+            
+            if(!cell.IsUnderwater && !cell.HasRoadThroughEdge(dir))
+                features.AddFeature(cell,(center + e.v1 + e.v5) * (1f / 3f));
         }
 
         if (dir <= HexDirection.SE)
@@ -334,6 +345,9 @@ public class HexGridChunk : MonoBehaviour
         
         TriangulateEdgeStrip(m, cell.Color, e, cell.Color);
         TriangulateEdgeFan(center, m, cell.Color);
+        
+        if(!cell.IsUnderwater && !cell.HasRoadThroughEdge(dir))
+            features.AddFeature(cell,(center + e.v1 + e.v5) * (1f / 3f));
     }
 
     void TriangulateRoadAdjacentToRiver(HexDirection dir, HexCell cell, Vector3 center, EdgeVertices e)

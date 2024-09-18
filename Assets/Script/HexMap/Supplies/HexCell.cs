@@ -12,6 +12,7 @@ public class HexCell : MonoBehaviour
     private int elevation = int.MinValue;
     
     private int waterLevel;
+    private int urbanLevel, farmLevel, plantLevel;
     
     public RectTransform uiRect;
     public HexGridChunk chunk;
@@ -19,6 +20,7 @@ public class HexCell : MonoBehaviour
     public HexCoordinates coordinates;
 
     private Color color;
+    private HexFeatureCollection featureCollection;
 
     private bool hasIncomingRiver, hasOutgoingRiver;
     private HexDirection incomingRiver, outgoingRiver;
@@ -81,6 +83,16 @@ public class HexCell : MonoBehaviour
             Refresh();
         }
     }
+    
+    public HexFeatureCollection FeatureCollection
+    {
+        get { return featureCollection; }
+        set
+        {
+            featureCollection = value;
+            Refresh();
+        }
+    }
 
     public float StreamBedY
     {
@@ -103,6 +115,53 @@ public class HexCell : MonoBehaviour
         get
         {
             return (waterLevel + HexMetrics.waterElevationOffset) * HexMetrics.elevationStep;
+        }
+    }
+
+    public int UrbanLevel
+    {
+        get
+        {
+            return urbanLevel;
+        }
+        set
+        {
+            if (UrbanLevel != value)
+            {
+                urbanLevel = value;
+                RefreshSelfOnly();
+            }
+        }
+    }
+    public int FarmLevel
+    {
+        get
+        {
+            return farmLevel;
+        }
+        set
+        {
+            if (farmLevel != value)
+            {
+                farmLevel = value;
+                RefreshSelfOnly();
+            }
+        }
+    }
+    
+    public int PlantLevel
+    {
+        get
+        {
+            return plantLevel;
+        }
+        set
+        {
+            if (plantLevel != value)
+            {
+                plantLevel = value;
+                RefreshSelfOnly();
+            }
         }
     }
 
@@ -227,7 +286,7 @@ public class HexCell : MonoBehaviour
             return;
         
         HexCell neighbor = GetNeighbor(dir);
-        if(!neighbor || elevation < neighbor.elevation)
+        if(!neighbor || Mathf.Abs(elevation - neighbor.elevation) > 1.2f)
             return;
         
         RemoveOutgoingRiver();
