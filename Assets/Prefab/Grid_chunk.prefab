@@ -156,6 +156,7 @@ MonoBehaviour:
   useCollider: 0
   useColors: 0
   useUV: 1
+  useTerrainTypes: 0
 --- !u!1 &2179512968975581352
 GameObject:
   m_ObjectHideFlags: 0
@@ -255,6 +256,7 @@ MonoBehaviour:
   useCollider: 0
   useColors: 0
   useUV: 1
+  useTerrainTypes: 0
 --- !u!1 &3638610148828333739
 GameObject:
   m_ObjectHideFlags: 0
@@ -383,11 +385,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14e2f62e738da964d90e36081a0a4dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  urbanCollections:
-  - name: Urban
-    prefabs: []
-  - name: Farm
-    prefabs: []
 --- !u!1 &7427183801466741647
 GameObject:
   m_ObjectHideFlags: 0
@@ -487,6 +484,7 @@ MonoBehaviour:
   useCollider: 0
   useColors: 0
   useUV: 0
+  useTerrainTypes: 0
 --- !u!1 &8916748799042482822
 GameObject:
   m_ObjectHideFlags: 0
@@ -586,6 +584,7 @@ MonoBehaviour:
   useCollider: 1
   useColors: 1
   useUV: 0
+  useTerrainTypes: 1
 --- !u!1 &9018999897280801732
 GameObject:
   m_ObjectHideFlags: 0
@@ -685,3 +684,4 @@ MonoBehaviour:
   useCollider: 0
   useColors: 0
   useUV: 1
+  useTerrainTypes: 0

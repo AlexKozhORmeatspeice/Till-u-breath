@@ -15,14 +15,14 @@ public class HexMesh : MonoBehaviour
 {
     private Mesh hexMesh;
 
-    [NonSerialized] private List<Vector3> verticies;
+    [NonSerialized] private List<Vector3> verticies, terrainTypes;
     [NonSerialized] private List<int> indBuffer;
     [NonSerialized] private List<Color> colors;
     [NonSerialized] private List<Vector2> uvs;
 
     private MeshCollider meshCollider;
 
-    public bool useCollider, useColors, useUV;
+    public bool useCollider, useColors, useUV, useTerrainTypes;
 
     private void Awake()
     {
@@ -32,7 +32,54 @@ public class HexMesh : MonoBehaviour
         if (useCollider)
             meshCollider = gameObject.AddComponent<MeshCollider>();
     }
+    public void Clear()
+    {
+        hexMesh.Clear();
+        verticies = ListPool<Vector3>.Get();
+        
+        if (useTerrainTypes)
+            terrainTypes = ListPool<Vector3>.Get();
+        
+        indBuffer = ListPool<int>.Get();
+        
+        if(useColors)
+            colors = ListPool<Color>.Get();
 
+        if (useUV)
+            uvs = ListPool<Vector2>.Get();
+    }
+
+    public void Apply()
+    {
+        hexMesh.SetVertices(verticies);
+        ListPool<Vector3>.Add(verticies);
+
+        if (useColors)
+        {
+            hexMesh.SetColors(colors);
+            ListPool<Color>.Add(colors);
+        }
+        
+        if (useTerrainTypes)
+        {
+            hexMesh.SetUVs(2, terrainTypes);
+            ListPool<Vector3>.Add(terrainTypes);
+        }
+        
+        hexMesh.SetTriangles(indBuffer, 0);
+        ListPool<int>.Add(indBuffer);
+        
+        hexMesh.RecalculateNormals();
+        
+        if(useCollider)
+            meshCollider.sharedMesh = hexMesh;
+
+        if (useUV)
+        {
+            hexMesh.SetUVs(0, uvs);
+            ListPool<Vector2>.Add(uvs);
+        }
+    }
 
     public void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3)
     {
@@ -142,44 +189,18 @@ public class HexMesh : MonoBehaviour
         uvs.Add(new Vector2(uMax, vMax));
     }
 
-    
-
-    public void Clear()
+    public void AddTriangleTerrainTypes(Vector3 types)
     {
-        hexMesh.Clear();
-        verticies = ListPool<Vector3>.Get();
-        indBuffer = ListPool<int>.Get();
-        
-        if(useColors)
-            colors = ListPool<Color>.Get();
-
-        if (useUV)
-            uvs = ListPool<Vector2>.Get();
+        terrainTypes.Add(types);
+        terrainTypes.Add(types);
+        terrainTypes.Add(types);
     }
 
-    public void Apply()
+    public void AddQuadTerrainTypes(Vector3 types)
     {
-        hexMesh.SetVertices(verticies);
-        ListPool<Vector3>.Add(verticies);
-
-        if (useColors)
-        {
-            hexMesh.SetColors(colors);
-            ListPool<Color>.Add(colors);
-        }
-
-        hexMesh.SetTriangles(indBuffer, 0);
-        ListPool<int>.Add(indBuffer);
-        
-        hexMesh.RecalculateNormals();
-        
-        if(useCollider)
-            meshCollider.sharedMesh = hexMesh;
-
-        if (useUV)
-        {
-            hexMesh.SetUVs(0, uvs);
-            ListPool<Vector2>.Add(uvs);
-        }
+        terrainTypes.Add(types);
+        terrainTypes.Add(types);
+        terrainTypes.Add(types);
+        terrainTypes.Add(types);
     }
 }

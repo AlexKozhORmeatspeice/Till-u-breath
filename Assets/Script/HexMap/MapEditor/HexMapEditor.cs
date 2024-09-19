@@ -26,6 +26,11 @@ public class HexMapEditor : MonoBehaviour
             dropdownFeature.options.Add(new TMPro.TMP_Dropdown.OptionData() { text = feature.name });
         }
         FeaturesIsChanged(0);
+        
+        if (File.Exists(mapPath))
+        {
+            Load();
+        }
     }
 
     private void Update()
@@ -88,7 +93,7 @@ public class HexMapEditor : MonoBehaviour
         if (!cell)
             return;
 
-        if (activeTerrainTypeIndex >= 0)
+        if (isApplyTerrainType)
             cell.TerrainTypeInd = activeTerrainTypeIndex;
         
         if(isApplyElevation)
@@ -172,12 +177,12 @@ public class HexMapEditor : MonoBehaviour
         activeWaterLevel = (int)level;
     }
     
-    public void SetApplyUrbanLevel(bool toggle)
+    public void SetApplyFeatureLevel(bool toggle)
     {
         isApplyFeature = toggle;
     }
 
-    public void SetUrbanLevel(float level)
+    public void SetFeatureLevel(float level)
     {
         featureLevel = (int)level;
     }
@@ -185,6 +190,11 @@ public class HexMapEditor : MonoBehaviour
     public void SetTerrainTypeIndex(int index)
     {
         activeTerrainTypeIndex = index;
+    }
+    
+    public void SetApplyTerrainType(bool toggle)
+    {
+        isApplyTerrainType = toggle;
     }
 
     void ValidateDrag(HexCell currentCell)
@@ -210,7 +220,7 @@ public class HexMapEditor : MonoBehaviour
 
     public void Save()
     {
-        string path = Path.Combine(dataPath, fileName);
+        string path = mapPath;
         Debug.Log(path);
         using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
         {
@@ -222,7 +232,7 @@ public class HexMapEditor : MonoBehaviour
     
     public void Load()
     {
-        string path = Path.Combine(dataPath, fileName);
+        string path = mapPath;
         using (BinaryReader reader = new BinaryReader(File.OpenRead(path)))
         {
             int header = reader.ReadInt32();
@@ -241,7 +251,9 @@ public class HexMapEditor : MonoBehaviour
     [SerializeField] private Transform chunkPrefab;
     [SerializeField] private TMPro.TMP_Dropdown dropdownFeature;
     [SerializeField] private Slider sliderFeature;
+    [SerializeField] private Texture2DArray texArray;
 
+    private bool isApplyTerrainType = true;
     private int activeTerrainTypeIndex;
     
     private int activeFeatureColectionIndex;
@@ -262,7 +274,7 @@ public class HexMapEditor : MonoBehaviour
 
     private HexFeatureManager featureManager;
     private string dataPath;
-    private const string fileName = "test.map";
+    private const string mapPath = "Assets/Script/HexMap/MapEditor/SaveFiles/test.map";
 }
 
 enum OptionalToggle

@@ -1,38 +1,53 @@
-Shader "Custom/Surface"
+Shader "Custom/Terrain"
 {
     Properties
     {
         _Color ("Color", Color) = (1,1,1,1)
-        _MainTex ("Albedo (RGB)", 2D) = "white" {}
+        _MainTex ("Albedo (RGB)", 2DArray) = "white" {}
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
         _Metallic ("Metallic", Range(0,1)) = 0.0
     }
     SubShader
     {
         Tags { "RenderType"="Opaque" }
-        LOD 200
 
         CGPROGRAM
-        #pragma surface surf Standard fullforwardshadows
+        #pragma surface surf Standard fullforwardshadows vertex:vert
         
-        #pragma target 3.0
+        #pragma target 3.5
 
-        sampler2D _MainTex;
+        UNITY_DECLARE_TEX2DARRAY(_MainTex);
 
         struct Input
         {
-            float2 uv_MainTex;
             float4 color : COLOR;
+            float3 worldPos;
+            float3 terrain;
         };
 
         half _Glossiness;
         half _Metallic;
         fixed4 _Color;
 
+        void vert(inout appdata_full v, out Input data)
+        {
+            UNITY_INITIALIZE_OUTPUT(Input, data);
+            data.terrain = v.texcoord2.xyz;
+        }
+        float4 GetTerrainColor(Input IN, int index)
+        {
+            float3 uvw = float3(IN.worldPos.xz * 0.02f, IN.terrain[index]);
+            fixed4 c = UNITY_SAMPLE_TEX2DARRAY(_MainTex, uvw);
+            return c * IN.color[index];
+        }
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
-            fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
-            o.Albedo = c.rgb * IN.color;
+            fixed4 c =
+                GetTerrainColor(IN, 0) +
+                GetTerrainColor(IN, 1) +
+                GetTerrainColor(IN, 2);
+                
+            o.Albedo = c.rgb * _Color;
 
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;

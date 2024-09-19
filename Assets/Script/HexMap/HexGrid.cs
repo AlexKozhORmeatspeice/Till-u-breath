@@ -11,7 +11,6 @@ using UnityEngine.UI;
 
 public class HexGrid : MonoBehaviour
 {
-    [SerializeField] private Color[] colors;
     [SerializeField] private HexFeatureCollection[] featureCollections;
     [SerializeField] private HexCell cellPrefab;
     [SerializeField] private TMP_Text cellLabelPrefab;
@@ -35,7 +34,6 @@ public class HexGrid : MonoBehaviour
         {
             HexMetrics.noiseSource = noiseSource;
             HexMetrics.InitializeHashGrid(seed);
-            HexMetrics.colors = colors;
             HexMetrics.featureCollections = featureCollections;
         }
         
@@ -44,7 +42,6 @@ public class HexGrid : MonoBehaviour
     {
         HexMetrics.noiseSource = noiseSource;
         HexMetrics.InitializeHashGrid(seed);
-        HexMetrics.colors = colors;
         HexMetrics.featureCollections = featureCollections;
         
         cellCountX = chunkCountX * HexMetrics.chunkSizeX;
