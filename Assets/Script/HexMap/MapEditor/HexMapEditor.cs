@@ -35,24 +35,35 @@ public class HexMapEditor : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButton(0) &&
-            !EventSystem.current.IsPointerOverGameObject())
+        if (!EventSystem.current.IsPointerOverGameObject())
         {
-            HandleInput();
+            if (Input.GetMouseButton(0))
+            {
+                HandleInput();
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.U))
+            {
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    DestroyUnit();
+                }
+                else
+                {
+                    CreateUnit();
+                }
+            }
         }
-        else
-        {
-            prevCell = null;
-        }
+        prevCell = null;
     }
 
     void HandleInput()
     {
-        Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(inputRay, out hit))
+        HexCell currentCell = GetCellUnderCursor();
+        
+        if(currentCell)
         {
-            HexCell currentCell = grid.GetCell(hit.point);
             if (prevCell && prevCell != currentCell)
             {
                 ValidateDrag(currentCell);
@@ -68,6 +79,18 @@ public class HexMapEditor : MonoBehaviour
         {
             prevCell = null;
         }
+    }
+
+    HexCell GetCellUnderCursor()
+    {
+        Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(inputRay, out hit))
+        {
+            return grid.GetCell(hit.point);
+        }
+
+        return null;
     }
 
     void EditCells(HexCell center)
@@ -135,6 +158,28 @@ public class HexMapEditor : MonoBehaviour
             }
         }
             
+    }
+
+    void CreateUnit()
+    {
+        HexCell cell = GetCellUnderCursor();
+        if (cell && (cell.Unit == null))
+        {
+            Transform prefab = Instantiate(unitPrefab);
+            IAgent agent = prefab.GetComponent<IAgent>();
+            prefab.SetParent(grid.transform, false);
+            
+            agent.ChangeLocation(cell);
+        }
+    }
+
+    void DestroyUnit()
+    {
+        HexCell cell = GetCellUnderCursor();
+        if (cell && cell.Unit != null)
+        {
+            cell.Unit.Die();
+        }
     }
     
     public void SetElevationLevel(float elevation)
@@ -252,7 +297,8 @@ public class HexMapEditor : MonoBehaviour
     [SerializeField] private TMPro.TMP_Dropdown dropdownFeature;
     [SerializeField] private Slider sliderFeature;
     [SerializeField] private Texture2DArray texArray;
-
+    [SerializeField] public Transform unitPrefab;
+    
     private bool isApplyTerrainType = true;
     private int activeTerrainTypeIndex;
     

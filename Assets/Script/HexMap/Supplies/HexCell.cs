@@ -190,7 +190,13 @@ public class HexCell : MonoBehaviour
             return waterLevel > elevation;
         }
     }
-    
+
+    public IAgent Unit
+    {
+        get => unit;
+        set => unit = value;
+    }
+
     public bool HasRoadThroughEdge(HexDirection dir)
     {
         return roads[(int)dir];
@@ -230,6 +236,11 @@ public class HexCell : MonoBehaviour
                     neighbor.chunk.Refresh();
                 }
             }
+
+            if (Unit != null)
+            {
+                Unit.ValidateLocation();
+            }
         }       
     }
 
@@ -238,6 +249,10 @@ public class HexCell : MonoBehaviour
         if (chunk)
         {
             chunk.Refresh();
+            if (Unit != null)
+            {
+                Unit.ValidateLocation();
+            }
         }
     }
 
@@ -410,6 +425,8 @@ public class HexCell : MonoBehaviour
     
     private int waterLevel;
     private int featureLevel;
+
+    private IAgent unit;
     
     public RectTransform uiRect;
     public HexGridChunk chunk;

@@ -628,7 +628,7 @@ public class HexGridChunk : MonoBehaviour
         types.z = rightCell.TerrainTypeInd; 
         
         terrain.AddTriangle(bottom, v3, v4);
-        terrain.AddTriangleColors(bottomCell.Color, c3, c4);
+        terrain.AddTriangleColors(tex1Color, c3, c4);
         terrain.AddTriangleTerrainTypes(types);
 
         for (int step = 2; step < HexMetrics.terraceSteps; step++)

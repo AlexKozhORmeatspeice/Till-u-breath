@@ -32,7 +32,7 @@ public class HexFeatureManager : MonoBehaviour
         Transform prefab = PickPrefab(cell.FeatureLevel, hash.a, hash.d);
         if (!prefab)
             return;
-
+        
         Transform instance = Instantiate(prefab);
         pos.y += instance.localScale.y * 0.5f;
         instance.localPosition = HexMetrics.Perturb(pos);
