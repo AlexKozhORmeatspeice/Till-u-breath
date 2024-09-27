@@ -13,7 +13,6 @@ public class HexMapEditor : MonoBehaviour
     {
         dataPath = Application.persistentDataPath;
         isApplyElevation = true;
-        
     }
 
     private void Start()
@@ -72,7 +71,32 @@ public class HexMapEditor : MonoBehaviour
             {
                 isDrag = false;
             }
-            EditCells(currentCell);
+
+            if (editMode)
+            {
+                EditCells(currentCell);
+            }
+            else if (Input.GetKey(KeyCode.LeftShift) && searchToCell != currentCell)
+            {
+                if (searchFromCell)
+                {
+                    searchFromCell.DisableOutline();
+                }
+
+                searchFromCell = currentCell;
+                searchFromCell.EnableOutline(Color.blue);
+                if (searchFromCell)
+                {
+                    HexPathfinding.FindPath(searchFromCell, searchToCell);
+                }
+            }
+            else if(searchFromCell && searchFromCell != currentCell)
+            {
+                searchToCell = currentCell;
+                HexPathfinding.FindPath(searchFromCell, searchToCell);
+            }
+                
+            
             prevCell = currentCell;
         }
         else
@@ -263,6 +287,24 @@ public class HexMapEditor : MonoBehaviour
         sliderFeature.maxValue = HexMetrics.featureCollections[activeFeatureColectionIndex].Length;
     }
 
+    public void ShowGrid(bool visible)
+    {
+        if (visible)
+        {
+            terrainMaterial.EnableKeyword("GRID_ON");
+        }
+        else
+        {
+            terrainMaterial.DisableKeyword("GRID_ON");
+        }
+    }
+
+    public void SetEditMode(bool toggle)
+    {
+        editMode = toggle;
+        grid.ShowUI(!toggle);
+    }
+
     public void Save()
     {
         string path = mapPath;
@@ -298,6 +340,9 @@ public class HexMapEditor : MonoBehaviour
     [SerializeField] private Slider sliderFeature;
     [SerializeField] private Texture2DArray texArray;
     [SerializeField] public Transform unitPrefab;
+    [SerializeField] private Material terrainMaterial;
+
+    private bool editMode;
     
     private bool isApplyTerrainType = true;
     private int activeTerrainTypeIndex;
@@ -316,7 +361,7 @@ public class HexMapEditor : MonoBehaviour
 
     private bool isDrag;
     private HexDirection dragDir;
-    private HexCell prevCell;
+    private HexCell prevCell, searchFromCell, searchToCell;
 
     private HexFeatureManager featureManager;
     private string dataPath;

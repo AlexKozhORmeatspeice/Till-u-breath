@@ -17,10 +17,10 @@ public class HexGrid : MonoBehaviour
 
     private int cellCountX, cellCountZ;
     public int chunkCountX = 4, chunkCountZ = 3;
-
     
     private HexCell[] cells;
-
+    public HexCell[] Cells => cells;
+    
     public Texture2D noiseSource;
     
     public HexGridChunk chunkPrefab;
@@ -49,6 +49,7 @@ public class HexGrid : MonoBehaviour
 
         CreateChunks();
         CreateCells();
+        HexPathfinding.Cells = cells;
     }
 
     void CreateChunks()
@@ -146,7 +147,6 @@ public class HexGrid : MonoBehaviour
         
         TMP_Text label = Instantiate<TMP_Text>(cellLabelPrefab);
         label.rectTransform.anchoredPosition = new Vector2(pos.x, pos.z);
-        label.text = cell.coordinates.ToStringOnSeparateLines();
 
         cell.uiRect = label.rectTransform;
         
@@ -185,6 +185,7 @@ public class HexGrid : MonoBehaviour
     
     public void Load(BinaryReader reader)
     {
+        StopAllCoroutines();
         for (int i = 0; i < cells.Length; i++)
         {
             cells[i].Load(reader);

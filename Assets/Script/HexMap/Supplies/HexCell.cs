@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Script;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HexCell : MonoBehaviour
 {
@@ -197,6 +199,20 @@ public class HexCell : MonoBehaviour
         set => unit = value;
     }
 
+    public int Distance
+    {
+        get
+        {
+            return distance;
+        }
+        set
+        {
+            distance = value;
+            UpdateDistanceLabel();
+        }
+    }
+    
+
     public bool HasRoadThroughEdge(HexDirection dir)
     {
         return roads[(int)dir];
@@ -345,6 +361,37 @@ public class HexCell : MonoBehaviour
         return d;
     }
 
+    void UpdateDistanceLabel()
+    {
+        TMP_Text lable = uiRect.GetComponent<TMP_Text>();
+        lable.text = distance == int.MaxValue ? "" : distance.ToString();
+    }
+
+    public void DisableOutline()
+    {
+        Image outline = uiRect.GetChild(0).GetComponent<Image>();
+        outline.enabled = false;
+    }
+
+    public void EnableOutline(Color color)
+    {
+        Image outline = uiRect.GetChild(0).GetComponent<Image>();
+        outline.color = color;
+        outline.enabled = true;
+    }
+    
+    public HexCell PathFrom { get; set; }
+    public int SearchHeuristic { get; set; }
+    public int SearchPriority
+    {
+        get
+        {
+            return distance + SearchHeuristic;
+        }
+    }
+
+    public HexCell NextWithSamePriority { get; set; }
+
     public void Save(BinaryWriter writer)
     {
         writer.Write((byte)terrainTypeInd);
@@ -422,6 +469,8 @@ public class HexCell : MonoBehaviour
     [SerializeField] private HexCell[] neighbors;
     [SerializeField] private bool[] roads;
     private int elevation = int.MinValue;
+
+    private int distance;
     
     private int waterLevel;
     private int featureLevel;

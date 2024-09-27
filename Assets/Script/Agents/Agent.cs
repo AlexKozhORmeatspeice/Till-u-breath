@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-//in children classes should be defined groups of actions and their transitions only
+//in children classes should be defined groups of actions
 public abstract class Agent<AState> : MonoBehaviour, IAgent where AState : Enum
 {
     private Stack<AgentState> states;

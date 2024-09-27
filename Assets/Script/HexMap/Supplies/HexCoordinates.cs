@@ -53,6 +53,11 @@ namespace Script
             return new HexCoordinates(iX, iZ);
         }
 
+        public int DistanceTo(HexCoordinates other)
+        {
+            return (Mathf.Abs(x - other.x) + Mathf.Abs(Y - other.Y) + Mathf.Abs(z - other.z)) / 2;
+        }
+        
         public override string ToString () {
             return "(" + X.ToString() + ", " + Y.ToString() + ", " + Z.ToString() + ")";
         }

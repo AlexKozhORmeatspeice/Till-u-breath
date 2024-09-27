@@ -13,8 +13,17 @@ public class WalkActionWorker : BaseAction<WorkerAgent.WorkerState>
     {
         HexCell nowCell = agent.NowAgentState.onCell;
         HexCell newCell = nowCell.GetNeighbor(HexDirection.SW);
-
-        AgentState newState = new AgentState(newCell);
+        AgentState newState;
+        
+        if (newCell == null)
+        {
+            newState = new AgentState(nowCell);
+        }
+        else
+        {
+            newState = new AgentState(newCell);
+        }
+        
         return newState;
     }
 
