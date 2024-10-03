@@ -6198,7 +6198,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: snow
+  m_text: grass
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -10896,13 +10896,15 @@ MonoBehaviour:
   m_Value: 0
   m_Options:
     m_Options:
-    - m_Text: snow
-      m_Image: {fileID: 21300000, guid: 9d9866fe41600ac45a3e4cf4b8665f86, type: 3}
     - m_Text: grass
+      m_Image: {fileID: 21300000, guid: 9d9866fe41600ac45a3e4cf4b8665f86, type: 3}
+    - m_Text: mud
       m_Image: {fileID: 21300000, guid: 32c97381bd03a6d47b98f26cffe09b4b, type: 3}
     - m_Text: stone
+      m_Image: {fileID: 21300000, guid: dde2e6a1ac6b130418dfd2850511497c, type: 3}
+    - m_Text: sand
       m_Image: {fileID: 21300000, guid: f19c6bc26bd156949873dc3343f67608, type: 3}
-    - m_Text: mud
+    - m_Text: slab
       m_Image: {fileID: 21300000, guid: dde2e6a1ac6b130418dfd2850511497c, type: 3}
   m_OnValueChanged:
     m_PersistentCalls:
