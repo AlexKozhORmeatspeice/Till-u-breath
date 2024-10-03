@@ -12,4 +12,5 @@ public interface IAgent
     public GameObject GetGameObject();
 
     public void Die();
+    public void SetGrid(HexGrid grid);
 }

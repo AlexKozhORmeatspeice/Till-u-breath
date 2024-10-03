@@ -5717,19 +5717,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   featureCollections:
-  - name: Urban
+  - isUnique: 0
+    name: 0
     prefabs:
     - {fileID: 7348465372983409908, guid: ef0b0c7dec75df14ab0173eaa5caca43, type: 3}
     - {fileID: 7348465372983409908, guid: 9b763b89e1bae994d9a039fa8a0198f9, type: 3}
-  - name: Farm
+  - isUnique: 0
+    name: 1
     prefabs:
     - {fileID: 7348465372983409908, guid: 9b763b89e1bae994d9a039fa8a0198f9, type: 3}
     - {fileID: 8591716890768485196, guid: 7a88446b3c69781469b946026a0eb8cd, type: 3}
     - {fileID: 8591716890768485196, guid: 73532d17480871347addfc19a9cc7281, type: 3}
-  - name: Nature
+  - isUnique: 0
+    name: 2
     prefabs:
     - {fileID: 8591716890768485196, guid: 73532d17480871347addfc19a9cc7281, type: 3}
     - {fileID: 8591716890768485196, guid: 7a88446b3c69781469b946026a0eb8cd, type: 3}
+  - isUnique: 1
+    name: 3
+    prefabs:
+    - {fileID: 6699394741984076454, guid: 7933c0971d667d944a4d8972d33a0f91, type: 3}
   cellPrefab: {fileID: 5826344037279997578, guid: 5ab02e65f71b38b4bac045ab3cfa04d3, type: 3}
   cellLabelPrefab: {fileID: 4649536389293576069, guid: beca9c1ba48493643ac0d5659f668be5, type: 3}
   chunkCountX: 4

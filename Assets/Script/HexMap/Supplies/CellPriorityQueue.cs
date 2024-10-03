@@ -5,16 +5,12 @@ public class CellPriorityQueue
 {
      private List<HexCell> list = new List<HexCell>();
      private int count = 0;
+     private int length = 0;
      private int minimum = int.MaxValue;
-     
-     public int Count
-     {
-          get
-          {
-               return count;
-          }
-     }
-     
+
+     public int Count => count;
+     public int Length => length;
+
      public void Enqueue(HexCell cell)
      {
           count++;
@@ -30,6 +26,7 @@ public class CellPriorityQueue
           }
           cell.NextWithSamePriority = list[priority];
           list[priority] = cell;
+          length += cell.Distance;
      }
 
      public HexCell Dequeue()
@@ -41,6 +38,7 @@ public class CellPriorityQueue
                if (cell != null)
                {
                     list[minimum] = cell.NextWithSamePriority;
+                    length -= cell.Distance;
                     return cell;
                }
           }
@@ -82,3 +80,5 @@ public class CellPriorityQueue
           minimum = int.MaxValue;
      }
 }
+
+

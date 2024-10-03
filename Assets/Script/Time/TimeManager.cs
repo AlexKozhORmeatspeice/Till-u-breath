@@ -10,7 +10,9 @@ public class TimeManager : MonoBehaviour
     [SerializeField] private int endTime = 10;
     [SerializeField] private int startTime = 0;
     [SerializeField] private TMP_Text txt;
-    private int nowTime;
+    private static int nowTime;
+    public static int NowTime => nowTime;
+    
     private static List<IAgent> agents = new List<IAgent>();
 
     public void BackToFuture(int n)
@@ -66,6 +68,7 @@ public class TimeManager : MonoBehaviour
     
     private void Awake()
     {
+        nowTime = 0;
         if (agents.Count != 0)
             agents.Clear();
     }

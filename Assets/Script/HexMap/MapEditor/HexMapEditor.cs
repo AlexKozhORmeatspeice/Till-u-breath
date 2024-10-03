@@ -22,7 +22,7 @@ public class HexMapEditor : MonoBehaviour
         dropdownFeature.options.Clear();
         foreach (HexFeatureCollection feature in HexMetrics.featureCollections)
         {
-            dropdownFeature.options.Add(new TMPro.TMP_Dropdown.OptionData() { text = feature.name });
+            dropdownFeature.options.Add(new TMPro.TMP_Dropdown.OptionData() { text = feature.name.ToString() });
         }
         FeaturesIsChanged(0);
         
@@ -181,7 +181,6 @@ public class HexMapEditor : MonoBehaviour
                 }
             }
         }
-            
     }
 
     void CreateUnit()
@@ -194,6 +193,7 @@ public class HexMapEditor : MonoBehaviour
             prefab.SetParent(grid.transform, false);
             
             agent.ChangeLocation(cell);
+            agent.SetGrid(grid);
         }
     }
 

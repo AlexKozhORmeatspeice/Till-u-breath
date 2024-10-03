@@ -1,28 +1,41 @@
 ﻿using UnityEngine;
 
-public class WorkActionWorker : BaseAction<WorkerAgent.WorkerState>
+public class WorkActionWorker : BaseAction<WorkerAgent.WorkerActions>
 {
+    private WorkerState workerState;
+    private WorkerAgent worker;
+    private int startOfWork;
+    
     public override void Start()
     {
-        Debug.Log("StartWork");
+        startOfWork = TimeManager.NowTime;
+        worker = agent.GetComponent<WorkerAgent>();
     }
 
-    public override AgentState Update()
+    public override AgentState<WorkerAgent.WorkerActions> Update()
     {
-        throw new System.NotImplementedException();
+        workerState = (WorkerState)agent.GetComponent<WorkerAgent>().NowAgentState;
+        Debug.Log((TimeManager.NowTime - startOfWork).ToString() + " and " + worker.TimeToWork.ToString());
+        
+        return new WorkerState(workerState.onCell, WorkerAgent.WorkerActions.work, workerState.lastMoveTime);
     }
 
     public override void Exit()
     {
-        throw new System.NotImplementedException();
+        //
     }
 
-    public override WorkerAgent.WorkerState GetNextState()
+    public override WorkerAgent.WorkerActions GetNextState()
     {
-        throw new System.NotImplementedException();
+        /*if (TimeManager.NowTime - startOfWork >= worker.TimeToWork)
+        {
+            return WorkerAgent.WorkerActions.walk;
+        }*/
+
+        return WorkerAgent.WorkerActions.work;
     }
 
-    public WorkActionWorker(WorkerAgent.WorkerState key, Agent<WorkerAgent.WorkerState> nowAgent) : base(key, nowAgent)
+    public WorkActionWorker(WorkerAgent.WorkerActions key, Agent<WorkerAgent.WorkerActions> nowAgent) : base(key, nowAgent)
     {
         
     }

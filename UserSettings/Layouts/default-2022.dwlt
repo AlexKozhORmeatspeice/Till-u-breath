@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 2560
     height: 989
   m_ShowMode: 4
-  m_Title: Game
+  m_Title: Inspector
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -121,7 +121,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 100}
   m_MaxSize: {x: 32384, y: 16192}
   vertical: 0
-  controlID: 186
+  controlID: 150
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -198,7 +198,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 100}
   m_MaxSize: {x: 8096, y: 16192}
   vertical: 1
-  controlID: 92
+  controlID: 114
 --- !u!114 &9
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -422,7 +422,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 58cff6ff5addf6ff60ddf6ffbe4ff8ffc212fdfff032fdff04bbfdfff0faffff746200009262000098620000026300008a630000cc630000f8630000
+      m_ExpandedIDs: 9484ffffe6cdffff26ceffffd8f7ffff0efbffffa2630000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -491,7 +491,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Prefab
+    - Assets/Prefab/Agents
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -499,16 +499,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 60
   m_LastFolders:
-  - Assets/Prefab
+  - Assets/Prefab/Agents
   m_LastFoldersGridSize: 60
   m_LastProjectPath: D:\Desktop\OOP\cod\GameDev\Unity\Till u breath
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: b0660000
-    m_LastClickedID: 26288
-    m_ExpandedIDs: 00000000aa660000ac660000ae660000b0660000b2660000b4660000da660000986a0000
+    m_SelectedIDs: 1c670000
+    m_LastClickedID: 26396
+    m_ExpandedIDs: 00000000f0660000f2660000f4660000f6660000f8660000fa660000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -536,7 +536,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000aa660000ac660000ae660000b0660000b2660000b4660000
+    m_ExpandedIDs: 00000000f0660000f2660000f4660000f6660000f8660000fa660000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1013,9 +1013,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 185.1754, y: 37.07861, z: 4.801214}
+    m_Target: {x: 131.84787, y: 25.897541, z: 8.269982}
     speed: 2
-    m_Value: {x: 185.1754, y: 37.07861, z: 4.801214}
+    m_Value: {x: 131.84787, y: 25.897541, z: 8.269982}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1061,13 +1061,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.4246549, y: 0.06563678, z: -0.0308741, w: -0.9024694}
+    m_Target: {x: 0.23413815, y: 0.13828634, z: -0.033667076, w: 0.9617289}
     speed: 2
-    m_Value: {x: -0.42464554, y: 0.06563533, z: -0.030873418, w: -0.9024495}
+    m_Value: {x: 0.23413819, y: 0.13828637, z: -0.033667084, w: 0.96172905}
   m_Size:
-    m_Target: 0.26318818
+    m_Target: 2.598076
     speed: 2
-    m_Value: 0.26318818
+    m_Value: 2.598076
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -1085,7 +1085,7 @@ MonoBehaviour:
     m_FarClip: 10000
     m_DynamicClip: 1
     m_OcclusionCulling: 0
-  m_LastSceneViewRotation: {x: 0.118179224, y: -0.20926537, z: -0.025492078, w: -0.97037846}
+  m_LastSceneViewRotation: {x: -0.08717229, y: 0.89959055, z: -0.21045254, w: -0.3726226}
   m_LastSceneViewOrtho: 0
   m_ReplacementShader: {fileID: 0}
   m_ReplacementString: 
@@ -1448,7 +1448,7 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: 62968
+  m_LastSelectedObjectID: 25506
 --- !u!114 &21
 MonoBehaviour:
   m_ObjectHideFlags: 52

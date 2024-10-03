@@ -18,8 +18,8 @@ public abstract class BaseAction<AState> where AState : Enum
       
       protected bool isActive;
       
-      public abstract void Start();
-      public abstract AgentState Update();
+      public abstract void Start(); 
+      public abstract AgentState<AState> Update();
 
       public abstract void Exit();
 

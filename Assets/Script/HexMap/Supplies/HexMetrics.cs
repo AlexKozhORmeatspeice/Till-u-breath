@@ -174,7 +174,7 @@ namespace Script
         
         public static float[] GetFeatureThreshold(int level)
         {
-            return featureThresholds[level];
+            return featureThresholds[Mathf.Clamp(level,0, 2)];
         }
     }
 }
