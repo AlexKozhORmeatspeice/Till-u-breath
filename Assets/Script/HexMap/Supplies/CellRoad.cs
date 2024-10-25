@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 public class CellRoad
 {
@@ -19,7 +20,16 @@ public class CellRoad
     {
         if(count == 0)
             length = cell.Distance;
-        list.Add(cell);
+
+        if (count < list.Count)
+        {
+            list[count - 1] = cell;
+        }            
+        else
+        {
+            list.Add(cell);
+        }
+
         count++;
     }
 
@@ -38,6 +48,8 @@ public class CellRoad
 
     public void Clear()
     {
+        count = 0;
+        length = 0;
         list.Clear();
     }
 }

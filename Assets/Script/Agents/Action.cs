@@ -1,16 +1,16 @@
 ﻿using System;
 using UnityEngine;
 
-public abstract class BaseAction<AState> where AState : Enum
+public abstract class BaseAction<AgentAction> where AgentAction : Enum
 {
-      protected Agent<AState> agent;
-      public BaseAction(AState key, Agent<AState> nowAgent)
+      protected Agent<AgentAction> agent;
+      public BaseAction(AgentAction key, Agent<AgentAction> nowAgent)
       {
             StateKey = key;
             agent = nowAgent;
       }
 
-      public AState StateKey
+      public AgentAction StateKey
       {
             get;
             private set;
@@ -19,9 +19,13 @@ public abstract class BaseAction<AState> where AState : Enum
       protected bool isActive;
       
       public abstract void Start(); 
-      public abstract AgentState<AState> Update();
+      public abstract AgentState<AgentAction> Update();
 
       public abstract void Exit();
 
-      public abstract AState GetNextState();
+      public abstract AgentAction GetNextAction();
+
+      public abstract AgentAction GetNextActionOnFrameUpdate();
+
+      public abstract void OnFrameUpdate();
 }

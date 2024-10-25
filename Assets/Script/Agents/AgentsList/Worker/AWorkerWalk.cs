@@ -2,24 +2,22 @@
 using Script.Agents.AgentsList.Supplies;
 using UnityEngine;
 
-public class WalkActionWorker : BaseAction<WorkerAgent.WorkerActions>
+public class AWorkerWalk : BaseAction<WorkerAgent.WorkerActions>
 {
     private WorkerAgent workerAgent;
     private CellRoad roadToWork;
 
-    private int lastTimeMove;
     private HexCell endCell;
     private HexCell startCell;
 
     public override void Start()
     {
-        lastTimeMove = TimeManager.NowTime;
         workerAgent = agent.GetComponent<WorkerAgent>();
+        workerAgent.lastTimeMove = TimeManager.NowTime;
         
         int min = int.MaxValue;
         HexCell startCell = agent.NowAgentState.onCell;
-        
-        
+
         if (endCell == null)
         {
             //find path to work
@@ -31,7 +29,6 @@ public class WalkActionWorker : BaseAction<WorkerAgent.WorkerActions>
                 
                     if (road != null && road.Length < min)
                     {
-                        Debug.Log(road.Length);
                         endCell = cell;
                         min = road.Length;
                     }
@@ -50,16 +47,15 @@ public class WalkActionWorker : BaseAction<WorkerAgent.WorkerActions>
         
         if (roadToWork == null)
         {
-            Debug.Log(agent.GetGameObject().name + " can't find a place to work");
-            return new WorkerState(nowCell, WorkerAgent.WorkerActions.walk, lastTimeMove);
+            return new WorkerState(nowCell, WorkerAgent.WorkerActions.walk, workerAgent.lastTimeMove);
         }
         
-        WorkerState newState = new WorkerState(nowCell, WorkerAgent.WorkerActions.walk, lastTimeMove);
+        WorkerState newState = new WorkerState(nowCell, WorkerAgent.WorkerActions.walk, workerAgent.lastTimeMove);
         
         HexCell newCell = roadToWork.Pop();
         
         int timeDist = HexPathfinding.GetTimeDist(nowCell, newCell);
-        if (TimeManager.NowTime - lastTimeMove >= timeDist)
+        if (TimeManager.NowTime - workerAgent.lastTimeMove >= timeDist)
         {
             newState.onCell = newCell;
             newState.lastMoveTime = TimeManager.NowTime;
@@ -73,7 +69,7 @@ public class WalkActionWorker : BaseAction<WorkerAgent.WorkerActions>
         startCell = endCell;
     }
 
-    public override WorkerAgent.WorkerActions GetNextState()
+    public override WorkerAgent.WorkerActions GetNextAction()
     {
         if (endCell == agent.NowAgentState.onCell)
         {
@@ -83,7 +79,17 @@ public class WalkActionWorker : BaseAction<WorkerAgent.WorkerActions>
         return WorkerAgent.WorkerActions.walk;
     }
 
-    public WalkActionWorker(WorkerAgent.WorkerActions key, Agent<WorkerAgent.WorkerActions> nowAgent) : base(key, nowAgent)
+    public override void OnFrameUpdate()
+    {
+        //
+    }
+
+    public override WorkerAgent.WorkerActions GetNextActionOnFrameUpdate()
+    {
+        return WorkerAgent.WorkerActions.walk;
+    }
+
+    public AWorkerWalk(WorkerAgent.WorkerActions key, Agent<WorkerAgent.WorkerActions> nowAgent) : base(key, nowAgent)
     {
     }
 }

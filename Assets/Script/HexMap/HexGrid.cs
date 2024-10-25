@@ -50,6 +50,7 @@ public class HexGrid : MonoBehaviour
         CreateChunks();
         CreateCells();
         HexPathfinding.Cells = cells;
+        InputManager.SetGrid(this);
     }
 
     void CreateChunks()

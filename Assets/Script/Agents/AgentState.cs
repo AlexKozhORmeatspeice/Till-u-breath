@@ -2,18 +2,18 @@
 using UnityEngine;
 
 [Serializable]
-public class AgentState<AState>
+public class AgentState<AgentAction>
 {
     public AgentState()
     {
         onCell = null;
     }
-    public AgentState(HexCell cell, AState state)
+    public AgentState(HexCell cell, AgentAction state)
     {
         onCell = cell;
-        nowState = state;
+        nowAction = state;
     }
     
     public HexCell onCell;
-    public AState nowState;
+    public AgentAction nowAction;
 }

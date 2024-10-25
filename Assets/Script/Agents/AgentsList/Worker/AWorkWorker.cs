@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class WorkActionWorker : BaseAction<WorkerAgent.WorkerActions>
+public class AWorkWorker : BaseAction<WorkerAgent.WorkerActions>
 {
     private WorkerState workerState;
     private WorkerAgent worker;
@@ -10,13 +10,11 @@ public class WorkActionWorker : BaseAction<WorkerAgent.WorkerActions>
     {
         startOfWork = TimeManager.NowTime;
         worker = agent.GetComponent<WorkerAgent>();
+        workerState = (WorkerState)worker.NowAgentState;
     }
 
     public override AgentState<WorkerAgent.WorkerActions> Update()
     {
-        workerState = (WorkerState)agent.GetComponent<WorkerAgent>().NowAgentState;
-        Debug.Log((TimeManager.NowTime - startOfWork).ToString() + " and " + worker.TimeToWork.ToString());
-        
         return new WorkerState(workerState.onCell, WorkerAgent.WorkerActions.work, workerState.lastMoveTime);
     }
 
@@ -25,7 +23,7 @@ public class WorkActionWorker : BaseAction<WorkerAgent.WorkerActions>
         //
     }
 
-    public override WorkerAgent.WorkerActions GetNextState()
+    public override WorkerAgent.WorkerActions GetNextAction()
     {
         /*if (TimeManager.NowTime - startOfWork >= worker.TimeToWork)
         {
@@ -35,7 +33,17 @@ public class WorkActionWorker : BaseAction<WorkerAgent.WorkerActions>
         return WorkerAgent.WorkerActions.work;
     }
 
-    public WorkActionWorker(WorkerAgent.WorkerActions key, Agent<WorkerAgent.WorkerActions> nowAgent) : base(key, nowAgent)
+    public override void OnFrameUpdate()
+    {
+        //
+    }
+
+    public override WorkerAgent.WorkerActions GetNextActionOnFrameUpdate()
+    {
+        return WorkerAgent.WorkerActions.work;
+    }
+
+    public AWorkWorker(WorkerAgent.WorkerActions key, Agent<WorkerAgent.WorkerActions> nowAgent) : base(key, nowAgent)
     {
         
     }
