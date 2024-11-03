@@ -3383,9 +3383,10 @@ MonoBehaviour:
   dropdownFeature: {fileID: 243373444}
   sliderFeature: {fileID: 1788563777}
   texArray: {fileID: 0}
+  terrainMaterial: {fileID: 2100000, guid: 3145410e135b7f543b333c79a8bc1337, type: 2}
   unitPrefab: {fileID: 2638191115395218717, guid: 7759aa21457a09146ad5382453f16099, type: 3}
   heroPrefab: {fileID: 2638191115395218717, guid: 6f2f765e06de9a6438438245ad6aa42a, type: 3}
-  terrainMaterial: {fileID: 2100000, guid: 3145410e135b7f543b333c79a8bc1337, type: 2}
+  doctorPrefab: {fileID: 2638191115395218717, guid: 5f91458d6997ec842b1da7b322c923c8, type: 3}
 --- !u!114 &579403034
 MonoBehaviour:
   m_ObjectHideFlags: 0

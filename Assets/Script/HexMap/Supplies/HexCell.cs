@@ -373,10 +373,19 @@ public class HexCell : MonoBehaviour
         outline.enabled = false;
     }
 
-    public void EnableOutline(Color color)
+    public void EnableOutline(Color color, bool halfAlpha = false)
     {
         Image outline = uiRect.GetChild(0).GetComponent<Image>();
-        outline.color = color;
+        if(!halfAlpha)
+        {
+            outline.color = color;
+        }
+        else
+        {
+            Color halfAlphaColor = new Color(color.r, color.g, color.b, 0.5f);
+            outline.color = halfAlphaColor;
+        }
+        
         outline.enabled = true;
     }
     

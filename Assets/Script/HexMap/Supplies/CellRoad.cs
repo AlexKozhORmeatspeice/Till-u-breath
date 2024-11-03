@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using UnityEngine;
 
 public class CellRoad
 {
@@ -51,5 +52,33 @@ public class CellRoad
         count = 0;
         length = 0;
         list.Clear();
+    }
+
+    public void EnableRoadColor(Color color, bool halfAlpha = false)
+    {
+        List<HexCell> sameRoad = new List<HexCell>();
+        int c = count;
+        for (int i = 0; i < c; i++)
+        {
+            HexCell cell = Pop();
+            cell.EnableOutline(color, halfAlpha);
+            sameRoad.Add(cell);
+        }
+        list = sameRoad;
+        count = sameRoad.Count;
+    }
+
+    public void DisableRoadColor()
+    {
+        List<HexCell> sameRoad = new List<HexCell>();
+        int c = count;
+        for (int i = 0; i < c; i++)
+        {
+            HexCell cell = Pop();
+            cell.DisableOutline();
+            sameRoad.Add(cell);
+        }
+        list = sameRoad;
+        count = sameRoad.Count;
     }
 }

@@ -6,6 +6,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.IO;
+using UnityEditor;
+
 
 public class HexMapEditor : MonoBehaviour
 {
@@ -67,6 +69,19 @@ public class HexMapEditor : MonoBehaviour
                 else
                 {
                     CreateHero();
+                }
+            }
+
+            //add Doctor
+            if (editMode && Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    DestroyDoctor();
+                }
+                else
+                {
+                    CreateDoctor();
                 }
             }
         }
@@ -193,14 +208,46 @@ public class HexMapEditor : MonoBehaviour
         HexCell cell = InputManager.GetCellUnderCursor();
         if (cell && cell.Unit != null)
         {
-            Hero hero = cell.Unit.GetGameObject().GetComponent<Hero>();
-            if (hero) 
+            Hero _hero = cell.Unit.GetGameObject().GetComponent<Hero>();
+            if (_hero) 
             {
-                hero.Die();
+                _hero.Die();
             }
         }
     }
-    
+
+    private void CreateDoctor()
+    {
+        HexCell cell = InputManager.GetCellUnderCursor();
+
+        if (doctor != null)
+            doctor.Die();
+
+        if (cell && cell.Unit == null)
+        {
+            Transform prefab = Instantiate(doctorPrefab);
+            prefab.SetParent(grid.transform, false);
+
+            doctor = prefab.GetComponent<Doctor>();
+
+            doctor.ChangeLocation(cell);
+            doctor.SetGrid(grid);
+        }
+    }
+
+    private void DestroyDoctor()
+    {
+        HexCell cell = InputManager.GetCellUnderCursor();
+        if (cell && cell.Unit != null)
+        {
+            Doctor _doctor = cell.Unit.GetGameObject().GetComponent<Doctor>();
+            if (_doctor)
+            {
+                _doctor.Die();
+            }
+        }
+    }
+
     void CreateUnit()
     {
         HexCell cell = InputManager.GetCellUnderCursor();
@@ -351,17 +398,24 @@ public class HexMapEditor : MonoBehaviour
         }
     }
 
+    [Header("Map prefabs")]
     [SerializeField] private HexGrid grid;
     [SerializeField] private Transform chunkPrefab;
+    
+    [Header("UI")]
     [SerializeField] private TMPro.TMP_Dropdown dropdownFeature;
     [SerializeField] private Slider sliderFeature;
     [SerializeField] private Texture2DArray texArray;
-    [SerializeField] public Transform unitPrefab;
-    [SerializeField] public Transform heroPrefab;
     [SerializeField] private Material terrainMaterial;
     
+    [Header("Agents")]
+    [SerializeField] public Transform unitPrefab;
+    [SerializeField] public Transform heroPrefab;
+    [SerializeField] public Transform doctorPrefab;
+
     private Hero hero;
-    
+    private Doctor doctor;
+
     private bool editMode;
     
     private bool isApplyTerrainType = true;

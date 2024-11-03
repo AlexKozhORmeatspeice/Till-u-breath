@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Security.Cryptography;
+using UnityEngine;
 using UnityEngine.EventSystems;
 public class AWalkHero : BaseAction<Hero.HeroActions>
 {
@@ -9,11 +10,15 @@ public class AWalkHero : BaseAction<Hero.HeroActions>
     {
         hero = agent.GetComponent<Hero>();
         hero.lastTimeMove = TimeManager.NowTime;
+
+        road = HexPathfinding.FindPath(agent.NowAgentState.onCell, hero.moveEndCell);
     }
 
     public override AgentState<Hero.HeroActions> Update()
     {
         HexCell nowCell = agent.NowAgentState.onCell;
+
+        road.DisableRoadColor();
         road = HexPathfinding.FindPath(nowCell, hero.moveEndCell);
 
         if (road == null)
@@ -31,6 +36,7 @@ public class AWalkHero : BaseAction<Hero.HeroActions>
             newState.lastMoveTime = TimeManager.NowTime;
         }
 
+        road.EnableRoadColor(hero.MoveColor, true);
         return newState;
     }
 
@@ -42,7 +48,13 @@ public class AWalkHero : BaseAction<Hero.HeroActions>
     public override Hero.HeroActions GetNextAction()
     {
         if (hero.moveEndCell == null || agent.NowAgentState.onCell == hero.moveEndCell)
+        {
+            road = HexPathfinding.FindPath(agent.NowAgentState.onCell, hero.moveEndCell);
+            road.DisableRoadColor();
+
             return Hero.HeroActions.inaction;
+        }
+            
 
         return Hero.HeroActions.walk;
     }
@@ -60,10 +72,12 @@ public class AWalkHero : BaseAction<Hero.HeroActions>
         {
             HexCell cell = InputManager.GetCellUnderCursor();
 
-            if (cell != null && cell == agent.NowAgentState.onCell) //choose hero
+            if (cell != null && cell == agent.NowAgentState.onCell)
             {
-                cell.EnableOutline(hero.StartColor);
-                return Hero.HeroActions.chooseWalk;
+                road = HexPathfinding.FindPath(agent.NowAgentState.onCell, hero.moveEndCell);
+                road.DisableRoadColor();
+
+                return Hero.HeroActions.inaction;
             }
         }
 
