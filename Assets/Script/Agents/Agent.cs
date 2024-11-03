@@ -4,34 +4,44 @@ using UnityEditor;
 using UnityEngine;
 
 //in children classes should be defined groups of actions
-public abstract class Agent<AState> : MonoBehaviour, IAgent where AState : Enum
+
+/// <summary>
+/// To set agent:
+/// 1. Create new class instance
+/// 2. Override Start() and don't forget to set all actions AND BASE AGENT STATE (var nowAgentState)
+/// 3. If Agent got some specific State Var don't forget to override ChangeState() with base.ChangeState()
+/// 4. You're awesome!
+/// </summary>
+public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentAction : Enum
 {
-    private Stack<AgentState> states;
-    private AgentState nowAgentState;
-    public AgentState NowAgentState => nowAgentState;
+    bool changeStateOnUpdate;
+    protected HexGrid hexGrid;
+    public HexGrid HexGrid => hexGrid;
+    
+    private Stack<AgentState<AgentAction>> states;
+    private AgentState<AgentAction> nowAgentState = new AgentState<AgentAction>();
 
-    protected Dictionary<AState, BaseAction<AState>> actionStates = new Dictionary<AState, BaseAction<AState>>();
-    protected BaseAction<AState> nowAction;
+    public AgentState<AgentAction> NowAgentState => nowAgentState;
 
-    public AgentState DoAction()
+    protected Dictionary<AgentAction, BaseAction<AgentAction>> actionStates = new Dictionary<AgentAction, BaseAction<AgentAction>>();
+    protected BaseAction<AgentAction> nowAction;
+
+    private AgentState<AgentAction> DoAction()
     {
-        AState nextStateKey = nowAction.GetNextState();
-
+        AgentAction nextStateKey = nowAction.GetNextAction();
         if (!nextStateKey.Equals(nowAction.StateKey))
         {
             nowAction.Exit();
             nowAction = actionStates[nextStateKey];
             nowAction.Start();
         }
-        
         return nowAction.Update();
     }
     public void UpdateStateFuture()
     {
         states.Push(nowAgentState);
-        nowAgentState = DoAction();
-
-        ChangeState(nowAgentState);
+        AgentState<AgentAction> state = DoAction();
+        ChangeState(state);
     }
     public void UpdateStatePast()
     {
@@ -43,23 +53,38 @@ public abstract class Agent<AState> : MonoBehaviour, IAgent where AState : Enum
         ChangeState(nowAgentState);
     }
 
-    protected virtual void Start()
+    protected virtual void Start() // if you override Start() remember to put base.Start() LAST and ONLY THE LAST 
     {
+        changeStateOnUpdate = false;
+
+        if (nowAgentState == null)
+            nowAgentState = new AgentState<AgentAction>();
+
         TimeManager.AddAgent(this);
-        states = new Stack<AgentState>();
+        states = new Stack<AgentState<AgentAction>>();
         
         nowAction.Start();
     }
-
+    
     public void Die()
     {
         nowAgentState.onCell.Unit = null;
         Destroy(gameObject);
     }
-    
+
+    public void SetGrid(HexGrid grid)
+    {
+        hexGrid = grid;
+    }
+
     public void ChangeLocation(HexCell cell)
     {
+        HexCell cellNow = nowAgentState.onCell;
+        if(cellNow != null)
+            cellNow.Unit = null;
+        
         nowAgentState.onCell = cell;
+
         transform.localPosition = cell.Position;
         cell.Unit = this;
     }
@@ -74,18 +99,45 @@ public abstract class Agent<AState> : MonoBehaviour, IAgent where AState : Enum
         return gameObject;
     }
 
-    private void ChangeState(AgentState state)
+    public void SetState(AgentState<AgentAction> state)
     {
-        transform.localPosition = nowAgentState.onCell.Position;
+        ChangeState(state);
     }
-    
-    private void LoadStates()
+    protected virtual void ChangeState(AgentState<AgentAction> state)
     {
+        ChangeLocation(state.onCell);
         
+        nowAction = actionStates[state.nowAction];
+        nowAgentState = state;
     }
 
-    private void SaveState()
+    private void Update()
     {
-        
+        nowAction.OnFrameUpdate();
+        OnFrameUpdateAction();
     }
+
+    private void OnFrameUpdateAction()
+    {
+        changeStateOnUpdate = true;
+        AgentAction nextStateKey = nowAction.GetNextActionOnFrameUpdate();
+        if (!nextStateKey.Equals(nowAction.StateKey))
+        {
+            nowAction.Exit();
+            nowAction = actionStates[nextStateKey];
+            nowAction.Start();
+        }
+        changeStateOnUpdate = false;
+    }
+
+    public void LoadStates()
+    {
+        //
+    }
+
+    public void SaveStates()
+    {
+        //
+    }
+
 }

@@ -7,11 +7,17 @@ using UnityEngine;
 
 public class TimeManager : MonoBehaviour
 {
-    [SerializeField] private int endTime = 10;
+    [SerializeField] private float timeBetweenMinuts = 0.2f;
+    [SerializeField] private int endTime = 50;
     [SerializeField] private int startTime = 0;
     [SerializeField] private TMP_Text txt;
-    private int nowTime;
+    private static int nowTime;
+    public static int NowTime => nowTime;
+    
     private static List<IAgent> agents = new List<IAgent>();
+
+    private bool timeIsGoing;
+    private bool isInCoroutine;
 
     public void BackToFuture(int n)
     {
@@ -28,6 +34,9 @@ public class TimeManager : MonoBehaviour
     
     public void BackToPast(int n)
     {
+        if (timeIsGoing)
+            return;
+
         for (int i = 0; i < n; i++)
         {
             if (nowTime - 1 < startTime)
@@ -63,9 +72,42 @@ public class TimeManager : MonoBehaviour
     {
         agents.Remove(agent);
     }
-    
+
+    private void LateUpdate()
+    {
+        //activate time
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            timeIsGoing = !timeIsGoing;
+        }
+
+        //manipualtion with time
+        if(timeIsGoing && !isInCoroutine)
+        {
+            StartCoroutine(UpdateTime());
+        }
+
+        if(!timeIsGoing)
+        {
+            isInCoroutine = false;
+            StopCoroutine(UpdateTime());
+        }
+    }
+
+    IEnumerator UpdateTime()
+    {
+        isInCoroutine = true;
+
+        BackToFuture(1);
+        yield return new WaitForSeconds(timeBetweenMinuts);
+        isInCoroutine = false;
+    }
+
     private void Awake()
     {
+        timeIsGoing = false;
+        nowTime = 0;
+
         if (agents.Count != 0)
             agents.Clear();
     }

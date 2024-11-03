@@ -136,7 +136,7 @@ Transform:
   m_Children:
   - {fileID: 3771609783418683100}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5850393390287777183
 MonoBehaviour:
@@ -150,11 +150,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 759f97514fef4469bfd9d99904aa6e2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startState:
-    onCell: {fileID: 5826344037279997578, guid: 5ab02e65f71b38b4bac045ab3cfa04d3, type: 3}
-  moveToWork:
-    endCell: {fileID: 0}
-  workAction:
-    workTime: 0
-  moveBack:
-    endCell: {fileID: 0}
+  timeToWork: 3
+  workPlace: 3

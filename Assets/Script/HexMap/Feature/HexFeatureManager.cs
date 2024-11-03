@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Script;
 using UnityEngine;
 
@@ -23,23 +24,46 @@ public class HexFeatureManager : MonoBehaviour
 
     public void Apply()
     {
-
+        
     }
 
     public void AddFeature(HexCell cell, Vector3 pos)
     {
         HexHash hash = HexMetrics.SampleHashGrid(pos);
-        Transform prefab = PickPrefab(cell.FeatureLevel, hash.a, hash.d);
+
+        Transform prefab;
+        if (!featureCollection.isUnique)
+        {
+            prefab = PickPrefab(cell.FeatureLevel, hash.a, hash.d);
+        }
+        else
+        {
+            prefab = featureCollection.Pick(1.0f);
+        }
+        
         if (!prefab)
             return;
-        
-        Transform instance = Instantiate(prefab);
-        pos.y += instance.localScale.y * 0.5f;
-        instance.localPosition = HexMetrics.Perturb(pos);
 
-        instance.localRotation = Quaternion.Euler(0f, 360f * hash.c, 0f);
+        if (!featureCollection.isUnique)
+        {
+            Transform instance = Instantiate(prefab);
+            pos.y += instance.localScale.y * 0.5f;
+            instance.localPosition = HexMetrics.Perturb(pos);
 
-        instance.SetParent(container, false);
+            instance.localRotation = Quaternion.Euler(0f, 360f * hash.c, 0f);
+
+            instance.SetParent(container, false);
+        }
+        else if(cell.FeatureLevel == 0)
+        {
+            Transform instance = Instantiate(prefab);
+            
+            pos.y += instance.localScale.y * 0.5f;
+            instance.localPosition = cell.Position;
+            
+            instance.localRotation = Quaternion.Euler(0f, 360f * hash.c, 0f);
+            instance.SetParent(container, false);
+        }
     }
 
     Transform PickPrefab(int level, float hash, float choice)

@@ -50,6 +50,7 @@ public class HexGrid : MonoBehaviour
         CreateChunks();
         CreateCells();
         HexPathfinding.Cells = cells;
+        InputManager.SetGrid(this);
     }
 
     void CreateChunks()
@@ -149,6 +150,7 @@ public class HexGrid : MonoBehaviour
         label.rectTransform.anchoredPosition = new Vector2(pos.x, pos.z);
 
         cell.uiRect = label.rectTransform;
+        cell.DisableOutline();
         
         cell.Elevation = 0;
         

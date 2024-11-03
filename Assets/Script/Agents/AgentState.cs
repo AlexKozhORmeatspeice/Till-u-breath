@@ -2,12 +2,18 @@
 using UnityEngine;
 
 [Serializable]
-public struct AgentState
+public class AgentState<AgentAction>
 {
-    public AgentState(HexCell cell)
+    public AgentState()
+    {
+        onCell = null;
+    }
+    public AgentState(HexCell cell, AgentAction state)
     {
         onCell = cell;
+        nowAction = state;
     }
     
     public HexCell onCell;
+    public AgentAction nowAction;
 }

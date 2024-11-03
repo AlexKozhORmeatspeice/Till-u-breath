@@ -6,6 +6,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.IO;
+using UnityEditor;
+
 
 public class HexMapEditor : MonoBehaviour
 {
@@ -17,12 +19,14 @@ public class HexMapEditor : MonoBehaviour
 
     private void Start()
     {
+        terrainMaterial.DisableKeyword("GRID_ON");
+        grid.ShowUI(true);
         dropdownFeature.onValueChanged.AddListener(FeaturesIsChanged);
         
         dropdownFeature.options.Clear();
         foreach (HexFeatureCollection feature in HexMetrics.featureCollections)
         {
-            dropdownFeature.options.Add(new TMPro.TMP_Dropdown.OptionData() { text = feature.name });
+            dropdownFeature.options.Add(new TMPro.TMP_Dropdown.OptionData() { text = feature.name.ToString() });
         }
         FeaturesIsChanged(0);
         
@@ -41,8 +45,9 @@ public class HexMapEditor : MonoBehaviour
                 HandleInput();
                 return;
             }
-
-            if (Input.GetKeyDown(KeyCode.U))
+            
+            //add units
+            if (editMode && Input.GetKeyDown(KeyCode.U))
             {
                 if (Input.GetKey(KeyCode.LeftShift))
                 {
@@ -53,13 +58,39 @@ public class HexMapEditor : MonoBehaviour
                     CreateUnit();
                 }
             }
+            
+            //add hero
+            if (editMode && Input.GetKeyDown(KeyCode.H))
+            {
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    DestroyHero();
+                }
+                else
+                {
+                    CreateHero();
+                }
+            }
+
+            //add Doctor
+            if (editMode && Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    DestroyDoctor();
+                }
+                else
+                {
+                    CreateDoctor();
+                }
+            }
         }
         prevCell = null;
     }
 
     void HandleInput()
     {
-        HexCell currentCell = GetCellUnderCursor();
+        HexCell currentCell = InputManager.GetCellUnderCursor();
         
         if(currentCell)
         {
@@ -76,27 +107,7 @@ public class HexMapEditor : MonoBehaviour
             {
                 EditCells(currentCell);
             }
-            else if (Input.GetKey(KeyCode.LeftShift) && searchToCell != currentCell)
-            {
-                if (searchFromCell)
-                {
-                    searchFromCell.DisableOutline();
-                }
 
-                searchFromCell = currentCell;
-                searchFromCell.EnableOutline(Color.blue);
-                if (searchFromCell)
-                {
-                    HexPathfinding.FindPath(searchFromCell, searchToCell);
-                }
-            }
-            else if(searchFromCell && searchFromCell != currentCell)
-            {
-                searchToCell = currentCell;
-                HexPathfinding.FindPath(searchFromCell, searchToCell);
-            }
-                
-            
             prevCell = currentCell;
         }
         else
@@ -105,17 +116,7 @@ public class HexMapEditor : MonoBehaviour
         }
     }
 
-    HexCell GetCellUnderCursor()
-    {
-        Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(inputRay, out hit))
-        {
-            return grid.GetCell(hit.point);
-        }
 
-        return null;
-    }
 
     void EditCells(HexCell center)
     {
@@ -181,25 +182,89 @@ public class HexMapEditor : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void CreateHero()
+    {
+        HexCell cell = InputManager.GetCellUnderCursor();
+        
+        if(hero != null)
+            hero.Die();
+
+        if (cell && cell.Unit == null)
+        {
+            Transform prefab = Instantiate(heroPrefab);
+            prefab.SetParent(grid.transform, false);
+
+            hero = prefab.GetComponent<Hero>();
             
+            hero.ChangeLocation(cell);
+            hero.SetGrid(grid);
+        }
+    }
+
+    private void DestroyHero()
+    {
+        HexCell cell = InputManager.GetCellUnderCursor();
+        if (cell && cell.Unit != null)
+        {
+            Hero _hero = cell.Unit.GetGameObject().GetComponent<Hero>();
+            if (_hero) 
+            {
+                _hero.Die();
+            }
+        }
+    }
+
+    private void CreateDoctor()
+    {
+        HexCell cell = InputManager.GetCellUnderCursor();
+
+        if (doctor != null)
+            doctor.Die();
+
+        if (cell && cell.Unit == null)
+        {
+            Transform prefab = Instantiate(doctorPrefab);
+            prefab.SetParent(grid.transform, false);
+
+            doctor = prefab.GetComponent<Doctor>();
+
+            doctor.ChangeLocation(cell);
+            doctor.SetGrid(grid);
+        }
+    }
+
+    private void DestroyDoctor()
+    {
+        HexCell cell = InputManager.GetCellUnderCursor();
+        if (cell && cell.Unit != null)
+        {
+            Doctor _doctor = cell.Unit.GetGameObject().GetComponent<Doctor>();
+            if (_doctor)
+            {
+                _doctor.Die();
+            }
+        }
     }
 
     void CreateUnit()
     {
-        HexCell cell = GetCellUnderCursor();
+        HexCell cell = InputManager.GetCellUnderCursor();
         if (cell && (cell.Unit == null))
         {
             Transform prefab = Instantiate(unitPrefab);
-            IAgent agent = prefab.GetComponent<IAgent>();
             prefab.SetParent(grid.transform, false);
             
+            IAgent agent = prefab.GetComponent<IAgent>();
             agent.ChangeLocation(cell);
+            agent.SetGrid(grid);
         }
     }
 
     void DestroyUnit()
     {
-        HexCell cell = GetCellUnderCursor();
+        HexCell cell = InputManager.GetCellUnderCursor();
         if (cell && cell.Unit != null)
         {
             cell.Unit.Die();
@@ -302,7 +367,6 @@ public class HexMapEditor : MonoBehaviour
     public void SetEditMode(bool toggle)
     {
         editMode = toggle;
-        grid.ShowUI(!toggle);
     }
 
     public void Save()
@@ -334,13 +398,23 @@ public class HexMapEditor : MonoBehaviour
         }
     }
 
+    [Header("Map prefabs")]
     [SerializeField] private HexGrid grid;
     [SerializeField] private Transform chunkPrefab;
+    
+    [Header("UI")]
     [SerializeField] private TMPro.TMP_Dropdown dropdownFeature;
     [SerializeField] private Slider sliderFeature;
     [SerializeField] private Texture2DArray texArray;
-    [SerializeField] public Transform unitPrefab;
     [SerializeField] private Material terrainMaterial;
+    
+    [Header("Agents")]
+    [SerializeField] public Transform unitPrefab;
+    [SerializeField] public Transform heroPrefab;
+    [SerializeField] public Transform doctorPrefab;
+
+    private Hero hero;
+    private Doctor doctor;
 
     private bool editMode;
     
