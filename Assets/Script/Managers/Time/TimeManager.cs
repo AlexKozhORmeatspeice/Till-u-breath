@@ -1,15 +1,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
 
 public class TimeManager : MonoBehaviour
 {
+    [Header("Settings")]
+    [SerializeField] private float timeBetweenMinutsLoad = 0.05f;
     [SerializeField] private float timeBetweenMinuts = 0.2f;
     [SerializeField] private int endTime = 50;
     [SerializeField] private int startTime = 0;
+
+    [Header("Prefabs")]
     [SerializeField] private TMP_Text txt;
     private static int nowTime;
     public static int NowTime => nowTime;
@@ -19,6 +24,7 @@ public class TimeManager : MonoBehaviour
     private bool timeIsGoing;
     private bool isInCoroutine;
 
+    private const string statesPath = "Assets/Script/Agents/SaveFiles/agentsStates.st";
     public void BackToFuture(int n)
     {
         for (int i = 0; i < n; i++)
@@ -45,7 +51,9 @@ public class TimeManager : MonoBehaviour
             nowTime--;
             txt.text = nowTime.ToString();
             UpdateAgentsPast();
-        } 
+        }
+
+        Save();
     }
     
     private void UpdateAgentsFuture()
@@ -110,5 +118,67 @@ public class TimeManager : MonoBehaviour
 
         if (agents.Count != 0)
             agents.Clear();
+    }
+
+    private void OnApplicationQuit()
+    {
+        Save();
+    }
+
+    public void Save()
+    {
+        string path = statesPath;
+        Debug.Log(path);
+        using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
+        {
+            writer.Write(0);
+            writer.Write(nowTime);
+            for(int time = 0; time < nowTime; time++)
+            {
+                foreach (IAgent agent in agents)
+                {
+                    agent.SaveState(writer, time);
+                }
+            }
+        }
+    }
+
+    public void Load()
+    {
+        string path = statesPath;
+        //load data
+        if (!File.Exists(path))
+            return;
+
+        using (BinaryReader reader = new BinaryReader(File.OpenRead(path)))
+        {
+            int header = reader.ReadInt32();
+            int timePast = reader.ReadInt32();
+            if (header != 0)
+            {
+                Debug.Log("Unknown format for map");
+            }
+            else
+            {
+                for (int time = 0; time < timePast; time++)
+                {
+                    foreach (IAgent agent in agents)
+                    {
+                        agent.LoadState(reader, time);
+                    }
+                }
+            }
+            StartCoroutine(BackToFutureWithDelay(timePast));            
+        }
+    }
+
+    IEnumerator BackToFutureWithDelay(int timePast)
+    {
+        WaitForSeconds waiter = new WaitForSeconds(timeBetweenMinutsLoad);
+        for(int i = 0; i < timePast; i++)
+        {
+            BackToFuture(1);
+            yield return waiter;
+        }
     }
 }

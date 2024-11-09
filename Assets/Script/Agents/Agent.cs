@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -18,14 +19,13 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
     protected HexGrid hexGrid;
     public HexGrid HexGrid => hexGrid;
     
-    private Stack<AgentState<AgentAction>> states;
+    private Dictionary<int, AgentState<AgentAction>> states;
     private AgentState<AgentAction> nowAgentState = new AgentState<AgentAction>();
 
     public AgentState<AgentAction> NowAgentState => nowAgentState;
 
     protected Dictionary<AgentAction, BaseAction<AgentAction>> actionStates = new Dictionary<AgentAction, BaseAction<AgentAction>>();
     protected BaseAction<AgentAction> nowAction;
-
     private AgentState<AgentAction> DoAction()
     {
         AgentAction nextStateKey = nowAction.GetNextAction();
@@ -39,7 +39,7 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
     }
     public void UpdateStateFuture()
     {
-        states.Push(nowAgentState);
+        states[TimeManager.NowTime - 1] = nowAgentState;
         AgentState<AgentAction> state = DoAction();
         ChangeState(state);
     }
@@ -47,7 +47,7 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
     {
         if (states.Count != 0)
         {
-            nowAgentState = states.Pop();
+            nowAgentState = states[TimeManager.NowTime];
         }
 
         ChangeState(nowAgentState);
@@ -61,7 +61,7 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
             nowAgentState = new AgentState<AgentAction>();
 
         TimeManager.AddAgent(this);
-        states = new Stack<AgentState<AgentAction>>();
+        states = new Dictionary<int, AgentState<AgentAction>>();
         
         nowAction.Start();
     }
@@ -129,15 +129,24 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
         }
         changeStateOnUpdate = false;
     }
-
-    public void LoadStates()
+    public virtual void SaveState(BinaryWriter writer, int time)
     {
-        //
+        AgentState<AgentAction> state = states[time];
+
+        writer.Write(hexGrid.GetCellID(state.onCell));
     }
 
-    public void SaveStates()
+    public virtual void LoadState(BinaryReader reader, int time)
     {
-        //
+        HexCell cell = hexGrid.GetCellByID(reader.ReadInt32());
+
+        AgentState<AgentAction> state = new AgentState<AgentAction>
+                                            (
+                                            cell, 
+                                            nowAgentState.nowAction
+                                            );
+
+        states[time] = state;
     }
 
 }

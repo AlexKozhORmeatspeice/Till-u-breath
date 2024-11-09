@@ -5,12 +5,12 @@ using System.IO;
 using System.Linq;
 using Script;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class HexCell : MonoBehaviour
 {
-
     public bool HasIncomingRiver => hasIncomingRiver;
     public bool HasOutgoingRiver => hasOutgoingRiver;
     public HexDirection IncomingRiver => incomingRiver;
@@ -408,6 +408,7 @@ public class HexCell : MonoBehaviour
         writer.Write((byte)waterLevel);
         writer.Write((byte)featureLevel);
         writer.Write((byte)featureCollectionInd);
+        writer.Write((byte)unitTypeInd);
 
         if (hasIncomingRiver)
         {
@@ -440,11 +441,12 @@ public class HexCell : MonoBehaviour
     
     public void Load(BinaryReader reader)
     {
-        terrainTypeInd = reader.ReadByte();
-        Elevation = reader.ReadByte();
-        WaterLevel = reader.ReadByte();
-        FeatureLevel = reader.ReadByte();
-        FeatureCollectionInd = reader.ReadByte();
+        terrainTypeInd          = reader.ReadByte();
+        Elevation               = reader.ReadByte();
+        WaterLevel              = reader.ReadByte();
+        FeatureLevel            = reader.ReadByte();
+        FeatureCollectionInd    = reader.ReadByte();
+        unitTypeInd             = reader.ReadByte();
 
         byte riverData = reader.ReadByte();
         if (riverData >= 128)
@@ -493,6 +495,46 @@ public class HexCell : MonoBehaviour
     
     private int terrainTypeInd;
     private int featureCollectionInd;
+
+    private int unitTypeInd
+    {
+        get
+        {
+            int ind = -1;
+
+            if (unit == null)
+                return ind;
+
+            GameObject prefabObj = PrefabUtility.GetCorrespondingObjectFromSource(unit.GetGameObject());
+            for (int i = 0; i < HexMetrics.unitCollection.Length; i++)
+            {
+                HexUnit collectionUnit = HexMetrics.unitCollection[i];
+
+                if (unit.GetGameObject().name.Contains(collectionUnit.prefab.name))
+                {
+                    ind = i;
+                    break;
+                }
+            }
+
+            return ind;
+        }
+        set
+        {
+            if (value == 255) //when convert -1 to byte gets 255 as a result
+            {
+                if(unit != null)
+                {
+                    unit.Die();
+                    unit = null;
+                }
+                return;
+            }
+            
+            IAgent agent =  HexUnitManager.CreateUnit(this, value);
+            unit = agent;
+        }
+    }
 
     private bool hasIncomingRiver, hasOutgoingRiver;
     private HexDirection incomingRiver, outgoingRiver;

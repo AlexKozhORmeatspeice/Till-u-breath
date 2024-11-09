@@ -1,7 +1,6 @@
 ﻿using Script.Agents.AgentsList.Supplies;
 using UnityEngine;
 
-
 [System.Serializable] 
 public struct HexFeatureCollection
 {

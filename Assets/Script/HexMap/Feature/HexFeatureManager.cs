@@ -5,7 +5,6 @@ using System.Linq;
 using Script;
 using UnityEngine;
 
-
 public class HexFeatureManager : MonoBehaviour
 {
     private static HexFeatureCollection featureCollection;

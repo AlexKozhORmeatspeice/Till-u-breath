@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.IO;
+using UnityEngine;
 
 public interface IAgent
 {
@@ -14,7 +15,6 @@ public interface IAgent
     public void Die();
     public void SetGrid(HexGrid grid);
 
-    public void LoadStates();
-
-    public void SaveStates();
+    public abstract void SaveState(BinaryWriter writer, int time);
+    public abstract void LoadState(BinaryReader reader, int time);
 }

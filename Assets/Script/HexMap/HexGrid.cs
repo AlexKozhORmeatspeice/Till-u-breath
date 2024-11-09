@@ -11,22 +11,28 @@ using UnityEngine.UI;
 
 public class HexGrid : MonoBehaviour
 {
+    [Header("Collections")]
     [SerializeField] private HexFeatureCollection[] featureCollections;
+    [SerializeField] private HexUnit[] units;
+
+    [Header("Prefabs")]
     [SerializeField] private HexCell cellPrefab;
     [SerializeField] private TMP_Text cellLabelPrefab;
+    public HexGridChunk chunkPrefab;
 
+    [Header("Settings")]
+    public int chunkCountX = 4;
+    public int chunkCountZ = 3;
+    public Texture2D noiseSource;
+    public int seed;
+    
     private int cellCountX, cellCountZ;
-    public int chunkCountX = 4, chunkCountZ = 3;
     
     private HexCell[] cells;
     public HexCell[] Cells => cells;
     
-    public Texture2D noiseSource;
-    
-    public HexGridChunk chunkPrefab;
     private HexGridChunk[] chunks;
 
-    public int seed;
 
     void OnEnable()
     {
@@ -43,14 +49,17 @@ public class HexGrid : MonoBehaviour
         HexMetrics.noiseSource = noiseSource;
         HexMetrics.InitializeHashGrid(seed);
         HexMetrics.featureCollections = featureCollections;
-        
+        HexMetrics.unitCollection = units;
+
         cellCountX = chunkCountX * HexMetrics.chunkSizeX;
         cellCountZ = chunkCountZ * HexMetrics.chunkSizeZ;
 
         CreateChunks();
         CreateCells();
         HexPathfinding.Cells = cells;
+        
         InputManager.SetGrid(this);
+        HexUnitManager.SetGrid(this);
     }
 
     void CreateChunks()
@@ -91,7 +100,17 @@ public class HexGrid : MonoBehaviour
         int ind = coordinates.X + coordinates.Z * cellCountX + coordinates.Z / 2;
         return cells[ind];
     }
-    
+
+    public int GetCellID(HexCell cell)
+    {
+        return Array.FindIndex(cells, w => w == cell);
+    }
+
+    public HexCell GetCellByID(int id)
+    {
+        return cells[id];
+    }
+
     public HexCell GetCell(HexCoordinates coordinates)
     {
         int z = coordinates.Z;
