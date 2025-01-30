@@ -3652,8 +3652,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4978ac6a2337064ab4e4f07c19dc23b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  timeBetweenMinutsLoad: 0.05
   timeBetweenMinuts: 0.5
-  endTime: 100
+  endTime: 1000
   startTime: 0
   txt: {fileID: 84376785}
 --- !u!1 &500496736
@@ -3917,6 +3918,7 @@ MonoBehaviour:
   chunkPrefab: {fileID: 8336389113402427196, guid: f6cb1d5affd915c4ca7cfcb80ee90233, type: 3}
   dropdownFeature: {fileID: 243373444}
   dropdownUnit: {fileID: 1282097620}
+  dropdownTerrain: {fileID: 2075123907}
   sliderFeature: {fileID: 1788563777}
   texArray: {fileID: 0}
   terrainMaterial: {fileID: 2100000, guid: 3145410e135b7f543b333c79a8bc1337, type: 2}
@@ -6568,22 +6570,44 @@ MonoBehaviour:
     prefabs:
     - {fileID: 8591716890768485196, guid: 73532d17480871347addfc19a9cc7281, type: 3}
     - {fileID: 8591716890768485196, guid: 7a88446b3c69781469b946026a0eb8cd, type: 3}
+    - {fileID: 6344729710384786253, guid: 0bcd048b81aed844eb5b6b14a4b5111e, type: 3}
   - isUnique: 1
     name: 3
     prefabs:
     - {fileID: 6699394741984076454, guid: 7933c0971d667d944a4d8972d33a0f91, type: 3}
+  - isUnique: 1
+    name: 4
+    prefabs:
+    - {fileID: 4416950594253897252, guid: 2b5c4af61ec449148bf151789fe32731, type: 3}
   units:
-  - isUnique: 1
+  - name: 3
+    isUnique: 1
     prefab: {fileID: 8578650296886724403, guid: 6f2f765e06de9a6438438245ad6aa42a, type: 3}
-  - isUnique: 1
+  - name: 2
+    isUnique: 1
     prefab: {fileID: 8578650296886724403, guid: 5f91458d6997ec842b1da7b322c923c8, type: 3}
-  - isUnique: 0
+  - name: 1
+    isUnique: 0
     prefab: {fileID: 8578650296886724403, guid: 7759aa21457a09146ad5382453f16099, type: 3}
+  - name: 0
+    isUnique: 0
+    prefab: {fileID: 1662093007249041359, guid: c52b6e310faa3bc4382046b512dabd0a, type: 3}
+  terrainCollection:
+  - terrainType: 0
+    texture: {fileID: 2800000, guid: be9d62e244132794fa1f5ade49e40f70, type: 3}
+  - terrainType: 1
+    texture: {fileID: 2800000, guid: 44e136552462b41438b36e427eb6bb35, type: 3}
+  - terrainType: 2
+    texture: {fileID: 2800000, guid: f10b20e48af087e4ca76fc1f27eacc95, type: 3}
+  - terrainType: 3
+    texture: {fileID: 2800000, guid: a24141df7c467214592b0ac0bfc60383, type: 3}
+  - terrainType: 4
+    texture: {fileID: 2800000, guid: 5db8d75dd1f5c0a4bbd5ba51f2b9aeb9, type: 3}
   cellPrefab: {fileID: 5826344037279997578, guid: 5ab02e65f71b38b4bac045ab3cfa04d3, type: 3}
   cellLabelPrefab: {fileID: 4649536389293576069, guid: beca9c1ba48493643ac0d5659f668be5, type: 3}
   chunkPrefab: {fileID: 8569491488970837456, guid: f6cb1d5affd915c4ca7cfcb80ee90233, type: 3}
-  chunkCountX: 4
-  chunkCountZ: 3
+  chunkCountX: 8
+  chunkCountZ: 8
   noiseSource: {fileID: 2800000, guid: e3589cc4748e1da46967158deb794135, type: 3}
   seed: 1111
 --- !u!1 &1050032010
@@ -12184,9 +12208,9 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 579403033}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: HexMapEditor, Assembly-CSharp
-        m_MethodName: SetTerrainTypeIndex
+        m_MethodName: 
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

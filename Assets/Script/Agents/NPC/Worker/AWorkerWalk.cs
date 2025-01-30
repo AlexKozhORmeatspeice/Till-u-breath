@@ -25,7 +25,7 @@ public class AWorkerWalk : BaseAction<WorkerAgent.WorkerActions>
             {
                 if (workerAgent.WorkPlace.Equals((Places)cell.FeatureCollectionInd))
                 {
-                    CellRoad road = HexPathfinding.FindPath(startCell, cell);
+                    CellRoad road = HexMath.FindPath(startCell, cell);
                 
                     if (road != null && road.Length < min)
                     {
@@ -41,7 +41,7 @@ public class AWorkerWalk : BaseAction<WorkerAgent.WorkerActions>
     public override AgentState<WorkerAgent.WorkerActions> Update()
     {
         HexCell nowCell = agent.NowAgentState.onCell;
-        roadToWork = HexPathfinding.FindPath(nowCell, endCell); 
+        roadToWork = HexMath.FindPath(nowCell, endCell); 
         
         //баля ну типо я пока в рот ебал как не просчитывать каждый ход путь
         
@@ -54,12 +54,7 @@ public class AWorkerWalk : BaseAction<WorkerAgent.WorkerActions>
         
         HexCell newCell = roadToWork.Pop();
         
-        int timeDist = HexPathfinding.GetTimeDist(nowCell, newCell);
-        if (TimeManager.NowTime - workerAgent.lastTimeMove >= timeDist)
-        {
-            newState.onCell = newCell;
-            newState.lastMoveTime = TimeManager.NowTime;
-        }
+        newState.onCell = newCell;
 
         return newState;
     }

@@ -4,6 +4,4 @@
     {
         lastMoveTime = _lastMoveTime;
     }
-
-    public int lastMoveTime;
 }

@@ -12,16 +12,19 @@ public class Doctor : Agent<Doctor.DoctorActions>
         chooseWalk,
         walk
     }
-    [SerializeField] private OrderMenu menu;
-    public OrderMenu MenuOrder => menu;
-
+    [Header("UISettings")]
     [SerializeField] private Color startColor;
     [SerializeField] private Color moveColor;
     [SerializeField] private Color endColor;
+
+    [Header("Prefabs")]
+    [SerializeField] private OrderMenu menu;
+    public OrderMenu MenuOrder => menu;
     public Color StartColor => startColor;
     public Color MoveColor => moveColor;
     public Color EndColor => endColor;
 
+    [Header("Script vars")]
     public int lastTimeMove;
     public Hero hero;
     protected override void Start()

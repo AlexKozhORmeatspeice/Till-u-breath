@@ -1,0 +1,46 @@
+using Script;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using static UnityEngine.RuleTile.TilingRuleOutput;
+
+public abstract class Item : MonoBehaviour
+{
+    private IAgent owner;
+    private HexCell onCell;
+    public abstract void Use(IAgent agent);
+    public abstract void Use(HexCell cell);
+
+    public void Take(IAgent agent)
+    {
+        owner = agent;
+
+    }
+
+    public void Drop(HexCell _onCell)
+    {
+        owner = null;
+        onCell = _onCell;
+
+        ChangeLocation(onCell);
+    }
+
+    private void ChangeLocation(HexCell cell)
+    {
+        HexCell cellNow = onCell;
+        if (cellNow != null)
+            cellNow.Item = null;
+
+        onCell = cell;
+
+        transform.localPosition = cell.Position;
+        
+        Vector3 pos = transform.localPosition;
+        pos.z += Random.Range(-HexMetrics.innerRadius, -HexMetrics.innerRadius);
+        pos.x += Random.Range(-HexMetrics.innerRadius, -HexMetrics.innerRadius);
+        transform.localPosition = pos;
+
+        cell.Item = this;
+    }
+
+}

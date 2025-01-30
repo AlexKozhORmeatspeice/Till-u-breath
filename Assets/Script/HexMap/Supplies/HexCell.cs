@@ -199,6 +199,12 @@ public class HexCell : MonoBehaviour
         set => unit = value;
     }
 
+    public Item Item
+    {
+        get => item;
+        set => item = value;
+    }
+
     public int Distance
     {
         get
@@ -212,6 +218,13 @@ public class HexCell : MonoBehaviour
         }
     }
     
+    public HexCellType CellType
+    {
+        get
+        {
+            return (HexCellType)terrainTypeInd;
+        }
+    }
 
     public bool HasRoadThroughEdge(HexDirection dir)
     {
@@ -487,7 +500,8 @@ public class HexCell : MonoBehaviour
     private int featureLevel;
 
     private IAgent unit;
-    
+    private Item item;
+
     public RectTransform uiRect;
     public HexGridChunk chunk;
 
@@ -496,7 +510,10 @@ public class HexCell : MonoBehaviour
     private int terrainTypeInd;
     private int featureCollectionInd;
 
-    private int unitTypeInd
+    private bool hasIncomingRiver, hasOutgoingRiver;
+    private HexDirection incomingRiver, outgoingRiver;
+
+    private int unitTypeInd //some magic to save objects on map
     {
         get
         {
@@ -530,12 +547,8 @@ public class HexCell : MonoBehaviour
                 }
                 return;
             }
-            
             IAgent agent =  HexUnitManager.CreateUnit(this, value);
             unit = agent;
         }
     }
-
-    private bool hasIncomingRiver, hasOutgoingRiver;
-    private HexDirection incomingRiver, outgoingRiver;
 }

@@ -36,10 +36,19 @@ public class HexMapEditor : MonoBehaviour
         dropdownUnit.onValueChanged.AddListener(UnitIsChanged);
         foreach (HexUnit unit in HexMetrics.unitCollection)
         {
-            dropdownUnit.options.Add(new TMPro.TMP_Dropdown.OptionData() { text = unit.prefab.name });
+            dropdownUnit.options.Add(new TMPro.TMP_Dropdown.OptionData() { text = unit.name.ToString()});
         }
         UnitIsChanged(0);
-        
+
+        //set texture dropdown
+        dropdownTerrain.options.Clear();
+        dropdownTerrain.onValueChanged.AddListener(SetTerrainTypeIndex);
+        foreach (TerrainTexture texture in HexMetrics.terrainColletion)
+        {
+            dropdownTerrain.options.Add(new TMPro.TMP_Dropdown.OptionData() { text = texture.terrainType.ToString() });
+        }
+        SetTerrainTypeIndex(0);
+
         //load data
         if (File.Exists(mapPath))
         {
@@ -318,6 +327,7 @@ public class HexMapEditor : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TMPro.TMP_Dropdown dropdownFeature;
     [SerializeField] private TMPro.TMP_Dropdown dropdownUnit;
+    [SerializeField] private TMPro.TMP_Dropdown dropdownTerrain;
     [SerializeField] private Slider sliderFeature;
     [SerializeField] private Texture2DArray texArray;
     [SerializeField] private Material terrainMaterial;

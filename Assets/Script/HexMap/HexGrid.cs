@@ -14,6 +14,7 @@ public class HexGrid : MonoBehaviour
     [Header("Collections")]
     [SerializeField] private HexFeatureCollection[] featureCollections;
     [SerializeField] private HexUnit[] units;
+    [SerializeField] private TerrainTexture[] terrainCollection;
 
     [Header("Prefabs")]
     [SerializeField] private HexCell cellPrefab;
@@ -50,13 +51,14 @@ public class HexGrid : MonoBehaviour
         HexMetrics.InitializeHashGrid(seed);
         HexMetrics.featureCollections = featureCollections;
         HexMetrics.unitCollection = units;
+        HexMetrics.terrainColletion = terrainCollection;
 
         cellCountX = chunkCountX * HexMetrics.chunkSizeX;
         cellCountZ = chunkCountZ * HexMetrics.chunkSizeZ;
 
         CreateChunks();
         CreateCells();
-        HexPathfinding.Cells = cells;
+        HexMath.Cells = cells;
         
         InputManager.SetGrid(this);
         HexUnitManager.SetGrid(this);

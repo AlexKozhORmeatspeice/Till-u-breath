@@ -172,6 +172,7 @@ namespace Script
         public static Color[] colors;
         public static HexFeatureCollection[] featureCollections;
         public static HexUnit[] unitCollection;
+        public static TerrainTexture[] terrainColletion;
         public static float[] GetFeatureThreshold(int level)
         {
             return featureThresholds[Mathf.Clamp(level,0, 2)];

@@ -129,7 +129,7 @@ public class AChooseWalkHero : BaseAction<Hero.HeroActions>
         DisableRoad();
 
         hero.moveEndCell = toCell;
-        nowRoad = HexPathfinding.FindPath(state.onCell, hero.moveEndCell);
+        nowRoad = HexMath.FindPath(state.onCell, hero.moveEndCell);
 
         if(nowRoad != null)
         {

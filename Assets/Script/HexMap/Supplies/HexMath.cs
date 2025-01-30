@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using Script;
+using System.Linq;
 
-public static class HexPathfinding
+public static class HexMath
 {
     private static HexCell[] cells;
 
@@ -182,5 +183,118 @@ public static class HexPathfinding
         }
         
         return -1;
+    }
+
+    public static bool CanMove(HexCell fromCell, HexCell toCell, int lastTimeMove, int speed = 1)
+    {
+        int timeDist = HexMath.GetTimeDist(fromCell, toCell);
+        return TimeManager.NowTime - lastTimeMove >= timeDist / speed;
+    }
+
+    public static int Distance(HexCell fromCell, HexCell toCell)
+    {
+        Vector3 coords = new Vector3(fromCell.coordinates.X - toCell.coordinates.X,
+                                     fromCell.coordinates.Y - toCell.coordinates.Y,
+                                     fromCell.coordinates.Z - toCell.coordinates.Z);
+
+        return (int)(Mathf.Abs(coords.x) + Mathf.Abs(coords.y) + Mathf.Abs(coords.z)) / 2;
+    }
+
+    public static List<IAgent> CheckAgentsInRadius(int radius, HexCell startCell)
+    {
+        if (radius == 0 || startCell == null)
+            return null;
+
+        List<IAgent> agents = new List<IAgent>(); 
+
+        Dictionary<HexCell, bool> wasHere = new Dictionary<HexCell, bool>();
+        Stack<HexCell> stack = new Stack<HexCell>();
+        stack.Push(startCell);
+
+        //DFS
+        while (stack.Count() != 0)
+        {
+            HexCell nowCell = stack.Pop();
+            if (nowCell.Unit != null)
+            {
+                agents.Add(nowCell.Unit);
+            }
+
+            for (HexDirection dir = HexDirection.NE; dir != HexDirection.NW; dir++)
+            {
+                HexCell newCell = nowCell.GetNeighbor(dir);
+                if (newCell != null && Distance(startCell, newCell) <= radius && !wasHere[newCell])
+                {
+                    stack.Push(newCell);
+                    wasHere[newCell] = true;   
+                }
+            }
+        }
+
+        return agents;
+    }
+
+    public static IAgent CheckAgentInRadius(int radius, HexCell startCell, IAgent exceptAgent = null)
+    {
+        if (radius == 0 || startCell == null)
+            return null;
+
+        Dictionary<HexCell, bool> wasHere = new Dictionary<HexCell, bool>();
+        Stack<HexCell> stack = new Stack<HexCell>();
+        stack.Push(startCell);
+
+        //DFS
+        while (stack.Count() != 0)
+        {
+            HexCell nowCell = stack.Pop();
+            if (nowCell.Unit != null && nowCell.Unit != exceptAgent)
+            {
+                return nowCell.Unit;
+            }
+
+            for (HexDirection dir = HexDirection.NE; dir != HexDirection.NW; dir++)
+            {
+                HexCell newCell = nowCell.GetNeighbor(dir);
+                if (newCell != null && Distance(startCell, newCell) <= radius && !wasHere[newCell])
+                {
+                    stack.Push(newCell);
+                    wasHere[newCell] = true;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public static bool IsAgentInRadius(int radius, HexCell startCell, IAgent agent)
+    {
+        if (radius == 0 || startCell == null)
+            return false;
+
+        Dictionary<HexCell, bool> wasHere = new Dictionary<HexCell, bool>();
+        Stack<HexCell> stack = new Stack<HexCell>();
+        stack.Push(startCell);
+
+        //DFS
+        while (stack.Count() != 0)
+        {
+            HexCell nowCell = stack.Pop();
+            if (nowCell.Unit == agent)
+            {
+                return true;
+            }
+
+            for (HexDirection dir = HexDirection.NE; dir != HexDirection.NW; dir++)
+            {
+                HexCell newCell = nowCell.GetNeighbor(dir);
+                if (newCell != null && Distance(startCell, newCell) <= radius && !wasHere[newCell])
+                {
+                    stack.Push(newCell);
+                    wasHere[newCell] = true;
+                }
+            }
+        }
+
+        return false;
     }
 }

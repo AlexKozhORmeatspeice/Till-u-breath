@@ -52,8 +52,6 @@ public class TimeManager : MonoBehaviour
             txt.text = nowTime.ToString();
             UpdateAgentsPast();
         }
-
-        Save();
     }
     
     private void UpdateAgentsFuture()

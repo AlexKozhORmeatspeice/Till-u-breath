@@ -5,6 +5,7 @@
         Urban,
         Village,
         Nature,
-        Factory
+        Factory,
+        HeroBar
     }
 }

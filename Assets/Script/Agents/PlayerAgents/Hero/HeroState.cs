@@ -8,6 +8,4 @@ public class HeroState : AgentState<Hero.HeroActions>
     {
         lastMoveTime = _lastMoveTime;
     }
-
-    public int lastMoveTime;
 }
