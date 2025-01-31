@@ -11,12 +11,12 @@ public class AInactionHero : BaseAction<Hero.HeroActions>
     public override void Start()
     {
         hero = agent.GetComponent<Hero>();
-        state = hero.NowAgentState;
+        state = hero.nowAgentState;
     }
 
-    public override AgentState<Hero.HeroActions> Update()
+    public override void Update()
     {
-        return agent.NowAgentState;
+        //
     }
 
     public override void Exit()

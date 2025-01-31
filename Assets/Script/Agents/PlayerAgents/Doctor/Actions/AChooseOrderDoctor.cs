@@ -15,7 +15,7 @@ class AChooseOrderDoctor : BaseAction<Doctor.DoctorActions>
         canChoose = false;
         startChooseTime = Time.time;
 
-        state = agent.NowAgentState as DoctorState;
+        state = agent.nowAgentState as DoctorState;
         doctor = agent as Doctor;
         menu = doctor.MenuOrder;
 
@@ -27,9 +27,9 @@ class AChooseOrderDoctor : BaseAction<Doctor.DoctorActions>
         canChoose = Time.time - startChooseTime > timeBeforeStartChoose;
     }
 
-    public override AgentState<Doctor.DoctorActions> Update()
+    public override void Update()
     {
-        return agent.NowAgentState;
+        //
     }
 
     public override void Exit()

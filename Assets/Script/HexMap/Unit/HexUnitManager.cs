@@ -1,8 +1,11 @@
 using Script;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEditor.Tilemaps;
 using UnityEngine;
+using static UnityEngine.UI.CanvasScaler;
 
 public class HexUnitManager : MonoBehaviour
 {
@@ -48,6 +51,24 @@ public class HexUnitManager : MonoBehaviour
 
         return null;
     }
+
+    public static int GetAgentIndex(IAgent agent)
+    {
+        int ind = -1;
+        GameObject prefabObj = PrefabUtility.GetCorrespondingObjectFromSource(agent.GetGameObject());
+        for (int i = 0; i < HexMetrics.unitCollection.Length; i++)
+        {
+            HexUnit collectionUnit = HexMetrics.unitCollection[i];
+
+            if (agent.GetGameObject().name.Contains(collectionUnit.prefab.name))
+            {
+                ind = i;
+                break;
+            }
+        }
+        return ind;
+    }
+
 
     public static void SetGrid(HexGrid _grid)
     {

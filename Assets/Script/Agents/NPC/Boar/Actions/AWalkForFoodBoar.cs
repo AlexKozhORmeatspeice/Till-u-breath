@@ -1,32 +1,25 @@
-﻿using Script;
+using Script;
 using UnityEngine;
 
-class AFindFoodBoar : BaseAction<Boar.BoarActions>
+class AWalkForFoodBoar : BaseAction<Boar.BoarActions>
 {
     Boar boar;
-    
+
     public override void Start()
     {
         boar = agent.gameObject.GetComponent<Boar>();
 
-        boar.searchFood = HexMath.FindFoodInRadius(boar.SearchFoodRadius, agent.nowAgentState.onCell);
+        Debug.Log("Walking for food");
     }
 
     public override void Update()
     {
-
+        //
     }
 
     public override Boar.BoarActions GetNextAction()
     {
-        if(boar.searchFood != null)
-        {
-            return Boar.BoarActions.walkForFood;
-        }
-        else
-        {
-            return Boar.BoarActions.digForFood;
-        }
+        return agent.nowAgentState.actionState;
     }
 
     public override Boar.BoarActions GetNextActionOnFrameUpdate()
@@ -43,7 +36,8 @@ class AFindFoodBoar : BaseAction<Boar.BoarActions>
     {
         //
     }
-    public AFindFoodBoar(Boar.BoarActions key, Agent<Boar.BoarActions> nowAgent) : base(key, nowAgent)
+
+    public AWalkForFoodBoar(Boar.BoarActions key, Agent<Boar.BoarActions> nowAgent) : base(key, nowAgent)
     {
     }
 }

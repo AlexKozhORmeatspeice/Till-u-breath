@@ -522,19 +522,7 @@ public class HexCell : MonoBehaviour
             if (unit == null)
                 return ind;
 
-            GameObject prefabObj = PrefabUtility.GetCorrespondingObjectFromSource(unit.GetGameObject());
-            for (int i = 0; i < HexMetrics.unitCollection.Length; i++)
-            {
-                HexUnit collectionUnit = HexMetrics.unitCollection[i];
-
-                if (unit.GetGameObject().name.Contains(collectionUnit.prefab.name))
-                {
-                    ind = i;
-                    break;
-                }
-            }
-
-            return ind;
+            return HexUnitManager.GetAgentIndex(unit);
         }
         set
         {
@@ -547,7 +535,8 @@ public class HexCell : MonoBehaviour
                 }
                 return;
             }
-            IAgent agent =  HexUnitManager.CreateUnit(this, value);
+
+            IAgent agent = HexUnitManager.CreateUnit(this, value);
             unit = agent;
         }
     }

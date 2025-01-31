@@ -185,14 +185,16 @@ public static class HexMath
         return -1;
     }
 
-    public static bool CanMove(HexCell fromCell, HexCell toCell, int lastTimeMove, int speed = 1)
+    public static bool CanMove(HexCell fromCell, HexCell toCell, int lastTimeMove)
     {
         int timeDist = HexMath.GetTimeDist(fromCell, toCell);
-        return TimeManager.NowTime - lastTimeMove >= timeDist / speed;
+        return TimeManager.NowTime - lastTimeMove >= timeDist;
     }
 
     public static int Distance(HexCell fromCell, HexCell toCell)
     {
+        if(fromCell == null || toCell == null) return int.MaxValue;
+
         Vector3 coords = new Vector3(fromCell.coordinates.X - toCell.coordinates.X,
                                      fromCell.coordinates.Y - toCell.coordinates.Y,
                                      fromCell.coordinates.Z - toCell.coordinates.Z);
@@ -200,7 +202,7 @@ public static class HexMath
         return (int)(Mathf.Abs(coords.x) + Mathf.Abs(coords.y) + Mathf.Abs(coords.z)) / 2;
     }
 
-    public static List<IAgent> CheckAgentsInRadius(int radius, HexCell startCell)
+    public static List<IAgent> FindAgentsInRadius(int radius, HexCell startCell)
     {
         if (radius == 0 || startCell == null)
             return null;
@@ -234,7 +236,7 @@ public static class HexMath
         return agents;
     }
 
-    public static IAgent CheckAgentInRadius(int radius, HexCell startCell, IAgent exceptAgent = null)
+    public static IAgent FindAgentInRadius(int radius, HexCell startCell, IAgent exceptAgent = null)
     {
         if (radius == 0 || startCell == null)
             return null;
@@ -296,5 +298,39 @@ public static class HexMath
         }
 
         return false;
+    }
+
+    public static Food FindFoodInRadius(int radius, HexCell startCell)
+    {
+        if (radius == 0 || startCell == null)
+            return null;
+
+        Dictionary<HexCell, bool> wasHere = new Dictionary<HexCell, bool>();
+        Stack<HexCell> stack = new Stack<HexCell>();
+        stack.Push(startCell);
+
+        //DFS
+        while (stack.Count() != 0)
+        {
+            HexCell nowCell = stack.Pop();
+
+            Food food = nowCell.Item as Food;
+            if (food != null)
+            {
+                return food;
+            }
+
+            for (HexDirection dir = HexDirection.NE; dir != HexDirection.NW; dir++)
+            {
+                HexCell newCell = nowCell.GetNeighbor(dir);
+                if (newCell != null && Distance(startCell, newCell) <= radius && (!wasHere.ContainsKey(newCell) || !wasHere[newCell]))
+                {
+                    stack.Push(newCell);
+                    wasHere[newCell] = true;
+                }
+            }
+        }
+
+        return null;
     }
 }

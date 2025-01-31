@@ -30,32 +30,12 @@ public class Hero : Agent<Hero.HeroActions>
     public Color MoveColor => moveColor;
     public Color EndColor => endColor;
 
-    protected override void Start()
+    protected override void AgentStart()
     {
         actionStates[HeroActions.inaction] = new AInactionHero(HeroActions.inaction, this);
         actionStates[HeroActions.chooseWalk] = new AChooseWalkHero(HeroActions.chooseWalk, this);
         actionStates[HeroActions.walk] = new AWalkHero(HeroActions.walk, this);
-           
-        nowAction = actionStates[HeroActions.inaction];
-        SetState(new HeroState(NowAgentState.onCell, HeroActions.inaction, TimeManager.NowTime));
-
-        nowWeapon = new Shotgun();
         
-        base.Start(); //always the last
-    }
-
-    protected override void ChangeState(AgentState<HeroActions> state)
-    {
-        base.ChangeState(state);
-        
-        if(state == null)
-        {
-            lastTimeMove = TimeManager.NowTime;
-        }
-        else
-        {
-            HeroState heroSt = state as HeroState;
-            lastTimeMove = heroSt.lastMoveTime;
-        }
+        nowAgentState.actionState = HeroActions.inaction;
     }
 }

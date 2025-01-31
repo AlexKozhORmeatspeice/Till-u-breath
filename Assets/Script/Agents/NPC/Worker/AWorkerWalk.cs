@@ -16,7 +16,7 @@ public class AWorkerWalk : BaseAction<WorkerAgent.WorkerActions>
         workerAgent.lastTimeMove = TimeManager.NowTime;
         
         int min = int.MaxValue;
-        HexCell startCell = agent.NowAgentState.onCell;
+        HexCell startCell = agent.nowAgentState.onCell;
 
         if (endCell == null)
         {
@@ -38,25 +38,19 @@ public class AWorkerWalk : BaseAction<WorkerAgent.WorkerActions>
         
     }
 
-    public override AgentState<WorkerAgent.WorkerActions> Update()
+    public override void Update()
     {
-        HexCell nowCell = agent.NowAgentState.onCell;
+        HexCell nowCell = agent.nowAgentState.onCell;
         roadToWork = HexMath.FindPath(nowCell, endCell); 
-        
-        //баля ну типо я пока в рот ебал как не просчитывать каждый ход путь
         
         if (roadToWork == null)
         {
-            return new WorkerState(nowCell, WorkerAgent.WorkerActions.walk, workerAgent.lastTimeMove);
+            return;
         }
-        
-        WorkerState newState = new WorkerState(nowCell, WorkerAgent.WorkerActions.walk, workerAgent.lastTimeMove);
         
         HexCell newCell = roadToWork.Pop();
         
-        newState.onCell = newCell;
-
-        return newState;
+        agent.nowAgentState.onCell = newCell;
     }
 
     public override void Exit()
@@ -66,7 +60,7 @@ public class AWorkerWalk : BaseAction<WorkerAgent.WorkerActions>
 
     public override WorkerAgent.WorkerActions GetNextAction()
     {
-        if (endCell == agent.NowAgentState.onCell)
+        if (endCell == agent.nowAgentState.onCell)
         {
             return WorkerAgent.WorkerActions.work;
         }

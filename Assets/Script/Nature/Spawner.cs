@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FoodSpawner : MonoBehaviour
+public class Spawner : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField][Range(40, 200)] private int timeToGrowFood = 50;
@@ -11,7 +11,7 @@ public class FoodSpawner : MonoBehaviour
     [SerializeField][Range(0.0f, 1.0f)] private float chanceOfBecomeSpawner = 0.1f;
     [SerializeField][Range(1, 6)] private int maxFoodOnSpawner; 
     [Header("Prefabs")]
-    [SerializeField] private Food foodPrefab;
+    [SerializeField] private PoolObj foodName;
     
     
     private bool isSpawner;
@@ -38,7 +38,7 @@ public class FoodSpawner : MonoBehaviour
 
         if(TimeManager.NowTime - lastTimeSpawn > timeToGrowFood)
         {
-            Food food = Instantiate(foodPrefab);
+            Food food = Pooler.Instance.SpawnPoolObject(foodName, Vector3.zero, Quaternion.identity).GetComponent<Food>();
 
             food.Drop(spawnCell);
             lastTimeSpawn = TimeManager.NowTime;

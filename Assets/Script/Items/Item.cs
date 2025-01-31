@@ -4,17 +4,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
-public abstract class Item : MonoBehaviour
+public abstract class Item : MonoBehaviour, IPooledObj
 {
     private IAgent owner;
+
     private HexCell onCell;
+    public HexCell OnCell => onCell;
+
     public abstract void Use(IAgent agent);
     public abstract void Use(HexCell cell);
+
+    public virtual void OnObjectSpawn()
+    {
+        
+    }
 
     public void Take(IAgent agent)
     {
         owner = agent;
-
     }
 
     public void Drop(HexCell _onCell)
@@ -42,5 +49,4 @@ public abstract class Item : MonoBehaviour
 
         cell.Item = this;
     }
-
 }

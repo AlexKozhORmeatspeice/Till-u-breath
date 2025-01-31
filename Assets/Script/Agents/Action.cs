@@ -19,7 +19,7 @@ public abstract class BaseAction<AgentAction> where AgentAction : Enum
       protected bool isActive;
       
       public abstract void Start(); 
-      public abstract AgentState<AgentAction> Update();
+      public abstract void Update(); //to work with Agent use: agent.nowAgentState
 
       public abstract void Exit();
 

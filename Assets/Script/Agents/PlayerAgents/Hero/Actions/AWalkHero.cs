@@ -10,28 +10,25 @@ public class AWalkHero : BaseAction<Hero.HeroActions>
     {
         hero = agent.GetComponent<Hero>();
 
-        road = HexMath.FindPath(agent.NowAgentState.onCell, hero.moveEndCell);
+        road = HexMath.FindPath(agent.nowAgentState.onCell, hero.moveEndCell);
     }
 
-    public override AgentState<Hero.HeroActions> Update()
+    public override void Update()
     {
-        HexCell nowCell = agent.NowAgentState.onCell;
+        HexCell nowCell = agent.nowAgentState.onCell;
 
         road.DisableRoadColor();
         road = HexMath.FindPath(nowCell, hero.moveEndCell);
 
         if (road == null)
         {
-            return agent.NowAgentState;
+            return;
         }
 
-        HeroState newState = new HeroState(nowCell, Hero.HeroActions.walk, hero.lastTimeMove);
-
         HexCell newCell = road.Pop();
-        newState.onCell = newCell;
+        agent.nowAgentState.onCell = newCell;
 
         road.EnableRoadColor(hero.MoveColor, true);
-        return newState;
     }
 
     public override void Exit()
@@ -41,9 +38,9 @@ public class AWalkHero : BaseAction<Hero.HeroActions>
 
     public override Hero.HeroActions GetNextAction()
     {
-        if (hero.moveEndCell == null || agent.NowAgentState.onCell == hero.moveEndCell)
+        if (hero.moveEndCell == null || agent.nowAgentState.onCell == hero.moveEndCell)
         {
-            road = HexMath.FindPath(agent.NowAgentState.onCell, hero.moveEndCell);
+            road = HexMath.FindPath(agent.nowAgentState.onCell, hero.moveEndCell);
             road.DisableRoadColor();
 
             return Hero.HeroActions.inaction;
@@ -66,9 +63,9 @@ public class AWalkHero : BaseAction<Hero.HeroActions>
         {
             HexCell cell = InputManager.GetCellUnderCursor();
 
-            if (cell != null && cell == agent.NowAgentState.onCell)
+            if (cell != null && cell == agent.nowAgentState.onCell)
             {
-                road = HexMath.FindPath(agent.NowAgentState.onCell, hero.moveEndCell);
+                road = HexMath.FindPath(agent.nowAgentState.onCell, hero.moveEndCell);
                 road.DisableRoadColor();
 
                 return Hero.HeroActions.inaction;

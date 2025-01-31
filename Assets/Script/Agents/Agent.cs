@@ -19,81 +19,121 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
     [Header("Max values")]
     [SerializeField] private int maxStartHP = 100;
     [SerializeField] private int maxStartEnergy = 100;
-    [SerializeField] private int maxStartMentality = 100;
+    [SerializeField] private int maxStartInsanity = 100;
+    [SerializeField] private float maxStartSpeed = 1.0f;
     private const int minAttitude = -50;
     private const int maxAttitude = 50;
     [Header("Vars")]
     [SerializeField] private bool addRandomnessInMove = false;
 
     private bool canDoAction;
-    public bool CanDoAction => canDoAction;
 
     bool isChangingStateOnUpdate;
     protected HexGrid hexGrid;
-    public HexGrid HexGrid => hexGrid;
     
     private Dictionary<int, AgentState<AgentAction>> states;
-    private AgentState<AgentAction> nowAgentState = new AgentState<AgentAction>();
-
-    public AgentState<AgentAction> NowAgentState => nowAgentState;
+    private AgentState<AgentAction> prevAgentState = new AgentState<AgentAction>();
+    public AgentState<AgentAction> nowAgentState = new AgentState<AgentAction>();
 
     protected Dictionary<AgentAction, BaseAction<AgentAction>> actionStates = new Dictionary<AgentAction, BaseAction<AgentAction>>();
-    protected BaseAction<AgentAction> nowAction;
-    private AgentState<AgentAction> DoAction()
+    private BaseAction<AgentAction> nowAction;
+
+    public bool CanDoAction => canDoAction;
+    public HexGrid HexGrid => hexGrid;
+
+    private void DoAction()
     {
         if (!canDoAction)
-            return nowAgentState;
+            return;
 
         AgentAction nextStateKey = nowAction.GetNextAction();
-        if (!nextStateKey.Equals(nowAction.StateKey))
+        int c = 0;
+
+        while(!nextStateKey.Equals(nowAgentState.actionState)) //to transition in one turn between multiple states
         {
+            if (c > 100)
+            {
+                Debug.LogError(gameObject.name + " is looping with state transition: \"" + 
+                                                 nextStateKey.ToString() + 
+                                                 "\" to \"" + 
+                                                 nowAction.GetNextAction().ToString() + "\"");
+                break;
+            }
+
             nowAction.Exit();
-            nowAction = actionStates[nextStateKey];
+            nowAgentState.actionState = nextStateKey;
+            nowAction = actionStates[nowAgentState.actionState];
             nowAction.Start();
+
+            nextStateKey = nowAction.GetNextAction();
+            c++;
         }
-        return nowAction.Update();
+
+        nowAction.Update();
     }
     public void UpdateStateFuture()
     {
-        states[TimeManager.NowTime - 1] = nowAgentState;
-        AgentState<AgentAction> state = DoAction();
-        ChangeState(state);
+        states[TimeManager.NowTime - 1] = prevAgentState;
+
+        nowAgentState = new AgentState<AgentAction>(prevAgentState);
+        DoAction();
+
+        ChangeState(nowAgentState);
     }
     public void UpdateStatePast()
     {
         if (states.Count != 0)
         {
             nowAgentState = states[TimeManager.NowTime];
-        }
-
-        ChangeState(nowAgentState);
-    }
-
-    protected virtual void Start() // if you override Start() remember to put base.Start() LAST and ONLY THE LAST 
-    {
-        if (TimeManager.NowTime == 0)
-        {
-            if (nowAgentState == null)
+            if(TimeManager.NowTime >= 1)
             {
-                nowAgentState = new AgentState<AgentAction>();
+                prevAgentState = states[TimeManager.NowTime - 1];
             }
             else
             {
-                nowAgentState.lastMoveTime = TimeManager.NowTime;
+                prevAgentState = nowAgentState;
             }
         }
+
+        ChangeState(prevAgentState);
+    }
+
+    private void Start()
+    {
+        AgentStart();
+
+        if (TimeManager.NowTime == 0)
+        {
+            if (prevAgentState == null)
+            {
+                prevAgentState = new AgentState<AgentAction>();
+            }
+
+            prevAgentState.lastMoveTime = TimeManager.NowTime;
+            prevAgentState.Energy = (short)maxStartEnergy;
+            prevAgentState.HP = (short)maxStartHP;
+            prevAgentState.Insanity = (short)maxStartInsanity;
+        }
+        else
+        {
+            prevAgentState = states[TimeManager.NowTime];
+        }
+
         canDoAction = true;
         isChangingStateOnUpdate = false;
 
         TimeManager.AddAgent(this);
         states = new Dictionary<int, AgentState<AgentAction>>();
-        
+
+        nowAction = actionStates[prevAgentState.actionState];
         nowAction.Start();
     }
+
+    protected abstract void AgentStart();
     
     public void Die()
     {
-        nowAgentState.onCell.Unit = null;
+        prevAgentState.onCell.Unit = null;
         Destroy(gameObject);
     }
 
@@ -104,11 +144,11 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
 
     public void ChangeLocation(HexCell cell)
     {
-        HexCell cellNow = nowAgentState.onCell;
+        HexCell cellNow = prevAgentState.onCell;
         if(cellNow != null)
             cellNow.Unit = null;
         
-        nowAgentState.onCell = cell;
+        prevAgentState.onCell = cell;
 
         transform.localPosition = cell.Position;
         cell.Unit = this;
@@ -116,7 +156,7 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
 
     public void ValidateLocation()
     {
-        transform.localPosition = nowAgentState.onCell.Position;
+        transform.localPosition = prevAgentState.onCell.Position;
     }
 
     public GameObject GetGameObject()
@@ -131,7 +171,7 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
 
     protected virtual void ChangeState(AgentState<AgentAction> state)
     {
-        HexCell nowCell = nowAgentState.onCell;
+        HexCell nowCell = prevAgentState.onCell;
         HexCell moveCell = state.onCell;
         if (nowCell != moveCell)
         {
@@ -141,7 +181,7 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
                 rand = UnityEngine.Random.Range(0, 2);
             }
             //check if move is valid
-            if (HexMath.CanMove(nowCell, moveCell, nowAgentState.lastMoveTime + rand))
+            if (HexMath.CanMove(nowCell, moveCell, (int)Mathf.Ceil((prevAgentState.lastMoveTime + rand) * maxStartSpeed)) )
             {
                 ChangeLocation(state.onCell);
                 state.lastMoveTime = TimeManager.NowTime;
@@ -150,12 +190,12 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
             else
             {
                 state.onCell = nowCell;
-                state.lastMoveTime = nowAgentState.lastMoveTime;
+                state.lastMoveTime = prevAgentState.lastMoveTime;
             }
         }
         
-        nowAction = actionStates[state.nowAction];
-        nowAgentState = state;
+        nowAction = actionStates[state.actionState];
+        prevAgentState = state;
     }
 
     private void Update()
@@ -210,7 +250,7 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
     {
         nowAgentState.Insanity = (short)(nowAgentState.Insanity - points);
         
-        if (nowAgentState.Insanity > maxStartMentality)
+        if (nowAgentState.Insanity > maxStartInsanity)
         {
             nowAgentState.InsanityPoints++;
             nowAgentState.Insanity = 0;
@@ -251,7 +291,7 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
         AgentState<AgentAction> state = new AgentState<AgentAction>
                                             (
                                             cell, 
-                                            nowAgentState.nowAction
+                                            nowAgentState.actionState
                                             );
         state.Energy = energy;
         state.XP = XP;

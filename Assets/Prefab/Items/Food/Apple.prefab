@@ -272,3 +272,4 @@ MonoBehaviour:
   GetHP: 2
   GetEN: 5
   liveTime: 40
+  BordRandInLiveTime: {x: 2, y: 10}

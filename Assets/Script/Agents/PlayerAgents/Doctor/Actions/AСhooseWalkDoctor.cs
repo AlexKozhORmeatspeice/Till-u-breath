@@ -6,7 +6,7 @@ internal class AСhooseWalkDoctor : BaseAction<Doctor.DoctorActions>
     Doctor doctor;
     public override void Start()
     {
-        state = agent.NowAgentState as DoctorState;
+        state = agent.nowAgentState as DoctorState;
         doctor = agent as Doctor;
 
         doctor.MenuOrder.gameObject.SetActive(false);
@@ -17,9 +17,9 @@ internal class AСhooseWalkDoctor : BaseAction<Doctor.DoctorActions>
         Debug.Log("choose walk");
     }
 
-    public override AgentState<Doctor.DoctorActions> Update()
+    public override void Update()
     {
-        return state;
+        //
     }
 
     public override void Exit()

@@ -9,29 +9,31 @@ class AWalkBoar : BaseAction<Boar.BoarActions>
         boar = agent.gameObject.GetComponent<Boar>();
     }
 
-    public override AgentState<Boar.BoarActions> Update()
+    public override void Update()
     {
         HexDirection dir = (HexDirection)(Random.Range(0, 6));
-        HexCell nowCell  = agent.NowAgentState.onCell;
-        HexCell moveCell = agent.NowAgentState.onCell.GetNeighbor(dir);
+        HexCell nowCell  = agent.nowAgentState.onCell;
+        HexCell moveCell = agent.nowAgentState.onCell.GetNeighbor(dir);
         
         if(moveCell != null && moveCell.CellType == boar.CellMoveType)
         {
-            AgentState<Boar.BoarActions> newState = new AgentState<Boar.BoarActions>(moveCell, agent.NowAgentState.nowAction);
-            return newState;
+            agent.nowAgentState.onCell = moveCell;
         }
-
-        return agent.NowAgentState;
     }
 
     public override Boar.BoarActions GetNextAction()
-    { 
-        return agent.NowAgentState.nowAction;
+    {
+        if(agent.nowAgentState.Energy <= 50 || agent.nowAgentState.HP < 100)
+        {
+            return Boar.BoarActions.searchFood;
+        }
+
+        return agent.nowAgentState.actionState;
     }
 
     public override Boar.BoarActions GetNextActionOnFrameUpdate()
     {
-        return agent.NowAgentState.nowAction;
+        return agent.nowAgentState.actionState;
     }
 
     public override void OnFrameUpdate()

@@ -10,12 +10,12 @@ public class AWorkWorker : BaseAction<WorkerAgent.WorkerActions>
     {
         startOfWork = TimeManager.NowTime;
         worker = agent.GetComponent<WorkerAgent>();
-        workerState = (WorkerState)worker.NowAgentState;
+        workerState = (WorkerState)worker.nowAgentState;
     }
 
-    public override AgentState<WorkerAgent.WorkerActions> Update()
+    public override void Update()
     {
-        return new WorkerState(workerState.onCell, WorkerAgent.WorkerActions.work, workerState.lastMoveTime);
+        //
     }
 
     public override void Exit()

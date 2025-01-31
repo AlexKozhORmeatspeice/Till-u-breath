@@ -6,7 +6,7 @@ public class AFollowHeroDoctor : BaseAction<Doctor.DoctorActions>
     Doctor doctor;
     public override void Start()
     {
-        state = agent.NowAgentState as DoctorState;
+        state = agent.nowAgentState as DoctorState;
         doctor = agent as Doctor;
 
         doctor.MenuOrder.gameObject.SetActive(false);
@@ -17,9 +17,9 @@ public class AFollowHeroDoctor : BaseAction<Doctor.DoctorActions>
         //
     }
 
-    public override AgentState<Doctor.DoctorActions> Update()
+    public override void Update()
     {
-        return agent.NowAgentState;
+        //
     }
 
     public override void Exit()

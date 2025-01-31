@@ -5,7 +5,7 @@
 
     public override void Start()
     {
-        state = agent.NowAgentState as DoctorState;
+        state = agent.nowAgentState as DoctorState;
         doctor = agent as Doctor;
 
         doctor.MenuOrder.gameObject.SetActive(false);
@@ -16,7 +16,7 @@
         throw new System.NotImplementedException();
     }
 
-    public override AgentState<Doctor.DoctorActions> Update()
+    public override void Update()
     {
         throw new System.NotImplementedException();
     }

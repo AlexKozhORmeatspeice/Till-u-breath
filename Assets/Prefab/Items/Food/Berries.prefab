@@ -48,6 +48,7 @@ MonoBehaviour:
   GetHP: 3
   GetEN: 2
   liveTime: 30
+  BordRandInLiveTime: {x: 1, y: 5}
 --- !u!1 &6209243914595079785
 GameObject:
   m_ObjectHideFlags: 0

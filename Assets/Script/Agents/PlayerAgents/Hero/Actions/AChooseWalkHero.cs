@@ -19,7 +19,7 @@ public class AChooseWalkHero : BaseAction<Hero.HeroActions>
     public override void Start()
     {
         hero = agent.GetComponent<Hero>();
-        state = agent.NowAgentState;
+        state = agent.nowAgentState;
 
         hero.moveEndCell = null;
         nowRoad = null;
@@ -54,9 +54,9 @@ public class AChooseWalkHero : BaseAction<Hero.HeroActions>
         }
     }
 
-    public override AgentState<Hero.HeroActions> Update()
+    public override void Update()
     {
-        return agent.NowAgentState;
+        //    
     }
 
     public override void Exit()
@@ -146,7 +146,7 @@ public class AChooseWalkHero : BaseAction<Hero.HeroActions>
 
     private void DisableRoad()
     {
-        agent.NowAgentState.onCell.DisableOutline();
+        agent.nowAgentState.onCell.DisableOutline();
 
         if (hero.moveEndCell != null)
         {
