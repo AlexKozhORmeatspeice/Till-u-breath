@@ -1,11 +1,9 @@
 ﻿class AWalkDoctor : BaseAction<Doctor.DoctorActions>
 {
-    DoctorState state;
     Doctor doctor;
 
     public override void Start()
     {
-        state = agent.nowAgentState as DoctorState;
         doctor = agent as Doctor;
 
         doctor.MenuOrder.gameObject.SetActive(false);

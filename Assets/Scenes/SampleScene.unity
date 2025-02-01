@@ -6657,8 +6657,8 @@ MonoBehaviour:
   cellPrefab: {fileID: 5826344037279997578, guid: 5ab02e65f71b38b4bac045ab3cfa04d3, type: 3}
   cellLabelPrefab: {fileID: 4649536389293576069, guid: beca9c1ba48493643ac0d5659f668be5, type: 3}
   chunkPrefab: {fileID: 8569491488970837456, guid: f6cb1d5affd915c4ca7cfcb80ee90233, type: 3}
-  chunkCountX: 8
-  chunkCountZ: 8
+  chunkCountX: 4
+  chunkCountZ: 4
   noiseSource: {fileID: 2800000, guid: e3589cc4748e1da46967158deb794135, type: 3}
   seed: 1111
 --- !u!1 &1050032010

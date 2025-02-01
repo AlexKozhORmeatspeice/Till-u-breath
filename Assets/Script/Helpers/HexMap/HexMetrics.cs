@@ -130,7 +130,7 @@ namespace Script
             return hashGrid[x + z * hashGridSize];
         }
 
-        public const int chunkSizeX = 5, chunkSizeZ = 5;
+        public const int chunkSizeX = 4, chunkSizeZ = 4;
 
         public const float outerToInner = 0.866025404f;
         public const float innerToOuter = 1f / outerToInner;

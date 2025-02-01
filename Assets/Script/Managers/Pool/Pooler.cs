@@ -3,15 +3,16 @@ using UnityEngine;
 
 public class Pooler : MonoBehaviour
 {
-    private Dictionary<PoolObj, Queue<GameObject>> PoolDictionary;
+    private Dictionary<PoolObjName, Queue<GameObject>> PoolDictionary;
     [System.Serializable]
     public class Pool
     {
-        public PoolObj name;
+        public PoolObjName name;
         public GameObject prefab;
         public int sizeOfPool;
     }
 
+    public static List<PoolObjName> foodObjNames;
     public static Pooler Instance;
     
     public List<Pool> PoolObjects;
@@ -20,7 +21,7 @@ public class Pooler : MonoBehaviour
     {
         Instance = this;
 
-        PoolDictionary = new Dictionary<PoolObj, Queue<GameObject>>();
+        PoolDictionary = new Dictionary<PoolObjName, Queue<GameObject>>();
 
         foreach (Pool pool in PoolObjects)
         {
@@ -41,10 +42,11 @@ public class Pooler : MonoBehaviour
             
             PoolDictionary.Add(pool.name, objectPool);
         }
-        
+
+        SetNameLists();
     }
 
-    public GameObject SpawnPoolObject(PoolObj objKye, Vector3 position, Quaternion quaternion)
+    public GameObject SpawnPoolObject(PoolObjName objKye, Vector3 position, Quaternion quaternion)
     {
         if (!PoolDictionary.ContainsKey(objKye))
         {
@@ -83,4 +85,16 @@ public class Pooler : MonoBehaviour
         }
     }
     
+    private void SetNameLists()
+    {
+        foodObjNames = new List<PoolObjName>();
+
+        foreach (Pool pool in PoolObjects)
+        {
+            if(pool.prefab.GetComponent<Food>())
+            {
+                foodObjNames.Add(pool.name);
+            }
+        }
+    }
 }

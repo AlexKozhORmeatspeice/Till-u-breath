@@ -4,24 +4,41 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [Serializable]
-public class AgentState<AgentAction>
+public struct AgentState<AgentAction>
 {
-    public AgentState()
+    public AgentState(HexCell cell, AgentAction state)
     {
-        onCell = null;
+        if (cell == null)
+        {
+            cellInd = short.MaxValue;
+        }
+        else
+        {
+            cellInd = (short)HexGrid.Instance.GetCellID(cell);
+        }
+
+        actionState = state;
 
         lastMoveTime = TimeManager.NowTime;
         HP = 100;
         Energy = 100;
-        Insanity = 100;
+        Insanity = 0;
         XP = 0;
         InsanityPoints = 0;
-        attitudeTo = new Dictionary<IAgent, short>();
     }
 
     public AgentState(AgentState<AgentAction> otherAgent)
     {
-        onCell = otherAgent.onCell;
+        if (otherAgent.onCell == null)
+        {
+            Debug.Log(1);
+            cellInd = short.MaxValue;
+        }
+        else
+        {
+            cellInd = (short)HexGrid.Instance.GetCellID(otherAgent.onCell);
+        }
+
         actionState = otherAgent.actionState;
 
         lastMoveTime = otherAgent.lastMoveTime;
@@ -30,32 +47,39 @@ public class AgentState<AgentAction>
         Insanity = otherAgent.Insanity;
         XP = otherAgent.XP;
         InsanityPoints = otherAgent.InsanityPoints;
-        attitudeTo = new Dictionary<IAgent, short>(otherAgent.attitudeTo);
     }
 
-    public AgentState(HexCell cell, AgentAction state)
-    {
-        onCell = cell;
-        actionState = state;
+    private short cellInd;
 
-        lastMoveTime = TimeManager.NowTime;
-        HP = 100;
-        Energy = 100;
-        Insanity = 100;
-        XP = 0;
-        InsanityPoints = 0;
-        attitudeTo = new Dictionary<IAgent, short>();
-    }
-    
-    public HexCell onCell;
     public AgentAction actionState;
 
     public int lastMoveTime;
 
-    public short HP;
-    public short Energy;
-    public short Insanity;
-    public short InsanityPoints;
-    public Dictionary<IAgent, short> attitudeTo;
-    public short XP;
+    public byte HP;
+    public byte Energy;
+    public byte Insanity;
+    public byte InsanityPoints;
+    public byte XP;
+
+
+    public HexCell onCell
+    {
+        get
+        {
+            if (cellInd == short.MaxValue)
+                return null;
+
+            return HexGrid.Instance.GetCellByID(cellInd);
+        }
+        set
+        {
+            if (value == null)
+            {
+                cellInd = short.MaxValue;
+                return;
+            }
+
+            cellInd = (short)HexGrid.Instance.GetCellID(value);
+        }
+    }
 }

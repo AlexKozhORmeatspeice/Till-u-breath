@@ -21,15 +21,18 @@ public abstract class Item : MonoBehaviour, IPooledObj
 
     public void Take(IAgent agent)
     {
+        Helper.ChangeRendererState(gameObject, false);
+        
         owner = agent;
+        onCell = null;
     }
 
     public void Drop(HexCell _onCell)
     {
-        owner = null;
-        onCell = _onCell;
+        Helper.ChangeRendererState(gameObject, true);
 
-        ChangeLocation(onCell);
+        owner = null;
+        ChangeLocation(_onCell);
     }
 
     private void ChangeLocation(HexCell cell)
@@ -43,8 +46,8 @@ public abstract class Item : MonoBehaviour, IPooledObj
         transform.localPosition = cell.Position;
         
         Vector3 pos = transform.localPosition;
-        pos.z += Random.Range(-HexMetrics.innerRadius, -HexMetrics.innerRadius);
-        pos.x += Random.Range(-HexMetrics.innerRadius, -HexMetrics.innerRadius);
+        pos.z += Random.Range(-HexMetrics.innerRadius, HexMetrics.innerRadius);
+        pos.x += Random.Range(-HexMetrics.innerRadius, HexMetrics.innerRadius);
         transform.localPosition = pos;
 
         cell.Item = this;

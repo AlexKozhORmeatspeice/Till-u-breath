@@ -13,19 +13,6 @@ public class Food : Item
     [SerializeField] private Vector2Int BordRandInLiveTime = Vector2Int.zero; 
     private int spawnTime;
     private int randInLiveTime = 0;
-    public override void Use(IAgent agent)
-    {
-        agent.ChangeHP(GetHP);
-        agent.ChangeEnergy(GetEN);
-
-        Destroy(this);
-    }
-
-    public override void Use(HexCell cell)
-    {
-        Drop(cell);
-    }
-
     public override void OnObjectSpawn()
     {
         randInLiveTime = Random.Range(Mathf.Min(BordRandInLiveTime.x, BordRandInLiveTime.y),
@@ -33,12 +20,30 @@ public class Food : Item
 
         spawnTime = TimeManager.NowTime;
     }
+    public override void Use(IAgent agent)
+    {
+        if(OnCell != null && HexMath.Distance(agent.GetCell(), OnCell) > 1)
+        {
+            return;
+        }
+
+        agent.ChangeHP(GetHP);
+        agent.ChangeEnergy(GetEN);
+
+        gameObject.SetActive(false);
+    }
+
+    public override void Use(HexCell cell)
+    {
+        Drop(cell);
+    }
+
 
     private void Update()
     {
         if(TimeManager.NowTime - spawnTime > liveTime)
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 }

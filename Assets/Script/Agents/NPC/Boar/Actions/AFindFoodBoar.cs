@@ -19,6 +19,12 @@ class AFindFoodBoar : BaseAction<Boar.BoarActions>
 
     public override Boar.BoarActions GetNextAction()
     {
+        if(agent.nowAgentState.HP == agent.MaxStartHP && agent.nowAgentState.Energy == agent.MaxStartEnergy)
+        {
+            boar.searchFood = null;
+            return Boar.BoarActions.walk;
+        }
+
         if(boar.searchFood != null)
         {
             return Boar.BoarActions.walkForFood;

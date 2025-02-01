@@ -11,7 +11,7 @@ public class Spawner : MonoBehaviour
     [SerializeField][Range(0.0f, 1.0f)] private float chanceOfBecomeSpawner = 0.1f;
     [SerializeField][Range(1, 6)] private int maxFoodOnSpawner; 
     [Header("Prefabs")]
-    [SerializeField] private PoolObj foodName;
+    [SerializeField] private PoolObjName foodName;
     
     
     private bool isSpawner;

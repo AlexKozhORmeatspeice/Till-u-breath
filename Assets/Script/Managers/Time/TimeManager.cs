@@ -17,8 +17,11 @@ public class TimeManager : MonoBehaviour
     [Header("Prefabs")]
     [SerializeField] private TMP_Text txt;
     private static int nowTime;
+    private static int staticEndTime;
     public static int NowTime => nowTime;
+    public static int EndTime => staticEndTime;
     
+
     private static List<IAgent> agents = new List<IAgent>();
 
     private bool timeIsGoing;
@@ -111,6 +114,7 @@ public class TimeManager : MonoBehaviour
 
     private void Awake()
     {
+        staticEndTime = endTime;
         timeIsGoing = false;
         nowTime = 0;
 

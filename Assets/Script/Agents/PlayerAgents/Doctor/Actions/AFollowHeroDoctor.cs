@@ -2,11 +2,9 @@ using UnityEngine.EventSystems;
 using UnityEngine;
 public class AFollowHeroDoctor : BaseAction<Doctor.DoctorActions>
 {
-    DoctorState state;
     Doctor doctor;
     public override void Start()
     {
-        state = agent.nowAgentState as DoctorState;
         doctor = agent as Doctor;
 
         doctor.MenuOrder.gameObject.SetActive(false);
@@ -40,7 +38,7 @@ public class AFollowHeroDoctor : BaseAction<Doctor.DoctorActions>
         {
             HexCell cell = InputManager.GetCellUnderCursor();
 
-            if (cell != null && cell == state.onCell) //choose hero
+            if (cell != null && agent.nowAgentState.onCell != null && cell == agent.nowAgentState.onCell) //choose hero
             {
                 cell.EnableOutline(doctor.StartColor);
                 return Doctor.DoctorActions.chooseOrder;

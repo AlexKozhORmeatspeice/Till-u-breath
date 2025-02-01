@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,13 +15,10 @@ public class Hero : Agent<Hero.HeroActions>
         walk
     }
 
-    [Header("Stats")]
-    [SerializeField] private int speed = 4;
     private Weapon nowWeapon;
 
-    [Header("State vars")]
-    public HexCell moveEndCell;
-    public int lastTimeMove;
+    [NonSerialized] public HexCell moveEndCell;
+    [NonSerialized] public int lastTimeMove;
 
     [Header("UI")]
     [SerializeField] private Color startColor;

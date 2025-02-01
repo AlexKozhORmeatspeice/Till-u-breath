@@ -535,7 +535,7 @@ public class HexCell : MonoBehaviour
                 }
                 return;
             }
-
+            
             IAgent agent = HexUnitManager.CreateUnit(this, value);
             unit = agent;
         }

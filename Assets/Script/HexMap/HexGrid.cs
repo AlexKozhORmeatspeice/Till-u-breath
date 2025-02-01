@@ -23,7 +23,7 @@ public class HexGrid : MonoBehaviour
 
     [Header("Settings")]
     public int chunkCountX = 4;
-    public int chunkCountZ = 3;
+    public int chunkCountZ = 4;
     public Texture2D noiseSource;
     public int seed;
     
@@ -34,6 +34,7 @@ public class HexGrid : MonoBehaviour
     
     private HexGridChunk[] chunks;
 
+    [NonSerialized] public static HexGrid Instance; //i hate this so much
 
     void OnEnable()
     {
@@ -47,6 +48,8 @@ public class HexGrid : MonoBehaviour
     }
     private void Awake()
     {
+        Instance = this;
+
         HexMetrics.noiseSource = noiseSource;
         HexMetrics.InitializeHashGrid(seed);
         HexMetrics.featureCollections = featureCollections;

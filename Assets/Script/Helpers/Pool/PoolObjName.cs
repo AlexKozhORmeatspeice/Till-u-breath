@@ -1,7 +1,7 @@
 using System;
 
 [Serializable]
-public enum PoolObj
+public enum PoolObjName
 {
     Apple,
     Berries

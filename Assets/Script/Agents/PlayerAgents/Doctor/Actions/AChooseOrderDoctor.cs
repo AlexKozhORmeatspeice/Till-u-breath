@@ -2,7 +2,6 @@
 
 class AChooseOrderDoctor : BaseAction<Doctor.DoctorActions>
 {
-    DoctorState state;
     Doctor doctor;
     OrderMenu menu;
 
@@ -15,7 +14,6 @@ class AChooseOrderDoctor : BaseAction<Doctor.DoctorActions>
         canChoose = false;
         startChooseTime = Time.time;
 
-        state = agent.nowAgentState as DoctorState;
         doctor = agent as Doctor;
         menu = doctor.MenuOrder;
 

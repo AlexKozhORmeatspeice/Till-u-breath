@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb89e3ca8022308489b841eeebbf0b00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStartHP: 40
+  maxStartHP: 100
   maxStartEnergy: 100
   maxStartInsanity: 100
   maxStartSpeed: 1
@@ -53,6 +53,7 @@ MonoBehaviour:
   cellMoveType: 0
   searchFoodRadius: 12
   searchEnemyRadius: 10
+  chanceToFindFood: 0.3
 --- !u!1 &7420714190266546857
 GameObject:
   m_ObjectHideFlags: 0

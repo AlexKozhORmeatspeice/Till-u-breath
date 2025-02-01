@@ -2,7 +2,6 @@
 
 public class AWorkWorker : BaseAction<WorkerAgent.WorkerActions>
 {
-    private WorkerState workerState;
     private WorkerAgent worker;
     private int startOfWork;
     
@@ -10,7 +9,6 @@ public class AWorkWorker : BaseAction<WorkerAgent.WorkerActions>
     {
         startOfWork = TimeManager.NowTime;
         worker = agent.GetComponent<WorkerAgent>();
-        workerState = (WorkerState)worker.nowAgentState;
     }
 
     public override void Update()

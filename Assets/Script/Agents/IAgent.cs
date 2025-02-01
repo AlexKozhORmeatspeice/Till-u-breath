@@ -10,11 +10,11 @@ public interface IAgent
     public void ValidateLocation();
 
     public GameObject GetGameObject();
+    public HexCell GetCell();
 
     public void ChangeHP(int points);
     public void ChangeEnergy(int points);
     public void ChangeInsanity(int points);
-    public void ChangeAttitude(IAgent agent, int points);
 
     public void Die();
     public void SetGrid(HexGrid grid);

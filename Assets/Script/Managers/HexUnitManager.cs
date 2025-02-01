@@ -25,31 +25,32 @@ public class HexUnitManager : MonoBehaviour
 
     public static IAgent CreateUnit(HexCell cell, int unitInd)
     {
-        HexUnit unit = HexMetrics.unitCollection[unitInd];
+        if (cell == null || cell.Unit != null)
+        {
+            return null;
+        }
 
+        HexUnit unit = HexMetrics.unitCollection[unitInd];
+        
         if (uniqueUnits.ContainsKey(unitInd))
         {
             uniqueUnits[unitInd].Die();
             uniqueUnits.Remove(unitInd);
         }
 
-        if (cell != null && (cell.Unit == null))
-        {
-            Transform prefab = Instantiate(unit.prefab.transform);
-            prefab.SetParent(grid.transform, false);
+        Transform prefab = Instantiate(unit.prefab.transform);
+        prefab.SetParent(grid.transform, false);
 
-            IAgent agent = prefab.GetComponent<IAgent>();
-            agent.ChangeLocation(cell);
-            agent.SetGrid(grid);
+        IAgent agent = prefab.GetComponent<IAgent>();
+        agent.ChangeLocation(cell);
+        agent.SetGrid(grid);
             
-            if (unit.isUnique)
-            {
-                uniqueUnits[unitInd] = agent;
-            }
-            return agent;
+        if (unit.isUnique)
+        {
+            uniqueUnits[unitInd] = agent;
         }
-
-        return null;
+        
+        return agent;
     }
 
     public static int GetAgentIndex(IAgent agent)

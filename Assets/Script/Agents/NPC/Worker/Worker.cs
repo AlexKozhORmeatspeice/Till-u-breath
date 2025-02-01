@@ -25,19 +25,4 @@ public class WorkerAgent : Agent<WorkerAgent.WorkerActions>
         
         nowAgentState.actionState = WorkerActions.walk;
     }
-
-    protected override void ChangeState(AgentState<WorkerActions> state)
-    {
-        base.ChangeState(state);
-
-        if (state == null)
-        {
-            lastTimeMove = TimeManager.NowTime;
-        }
-        else
-        {
-            WorkerState workerSt = state as WorkerState;
-            lastTimeMove = workerSt.lastMoveTime;
-        }
-    }
 }

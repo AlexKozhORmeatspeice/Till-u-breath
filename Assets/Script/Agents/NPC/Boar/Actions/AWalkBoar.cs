@@ -12,6 +12,7 @@ class AWalkBoar : BaseAction<Boar.BoarActions>
     public override void Update()
     {
         HexDirection dir = (HexDirection)(Random.Range(0, 6));
+        
         HexCell nowCell  = agent.nowAgentState.onCell;
         HexCell moveCell = agent.nowAgentState.onCell.GetNeighbor(dir);
         
@@ -23,10 +24,10 @@ class AWalkBoar : BaseAction<Boar.BoarActions>
 
     public override Boar.BoarActions GetNextAction()
     {
-        if(agent.nowAgentState.Energy <= 50 || agent.nowAgentState.HP < 100)
+        /*if(agent.nowAgentState.Energy <= agent.MaxStartEnergy / 2 || agent.nowAgentState.HP < agent.MaxStartHP)
         {
-            return Boar.BoarActions.searchFood;
-        }
+            return Boar.BoarActions.findFood;
+        }*/
 
         return agent.nowAgentState.actionState;
     }

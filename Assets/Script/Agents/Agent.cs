@@ -14,8 +14,12 @@ using UnityEngine;
 /// 3. If Agent got some specific State Var don't forget to override ChangeState() with base.ChangeState()
 /// 4. You're awesome!
 /// </summary>
+
+
+
 public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentAction : Enum
 {
+
     [Header("Max values")]
     [SerializeField] private int maxStartHP = 100;
     [SerializeField] private int maxStartEnergy = 100;
@@ -31,15 +35,19 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
     bool isChangingStateOnUpdate;
     protected HexGrid hexGrid;
     
-    private Dictionary<int, AgentState<AgentAction>> states;
+    private AgentState<AgentAction>[] states;
     private AgentState<AgentAction> prevAgentState = new AgentState<AgentAction>();
-    public AgentState<AgentAction> nowAgentState = new AgentState<AgentAction>();
+    [NonSerialized] public AgentState<AgentAction> nowAgentState = new AgentState<AgentAction>();
 
     protected Dictionary<AgentAction, BaseAction<AgentAction>> actionStates = new Dictionary<AgentAction, BaseAction<AgentAction>>();
     private BaseAction<AgentAction> nowAction;
 
     public bool CanDoAction => canDoAction;
     public HexGrid HexGrid => hexGrid;
+    public int MaxStartHP => maxStartHP;
+    public int MaxStartEnergy => maxStartEnergy;
+    public int MaxStartInsanity => maxStartInsanity;
+    public float MaxStartSpeed => maxStartSpeed;
 
     private void DoAction()
     {
@@ -51,19 +59,19 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
 
         while(!nextStateKey.Equals(nowAgentState.actionState)) //to transition in one turn between multiple states
         {
-            if (c > 100)
-            {
-                Debug.LogError(gameObject.name + " is looping with state transition: \"" + 
-                                                 nextStateKey.ToString() + 
-                                                 "\" to \"" + 
-                                                 nowAction.GetNextAction().ToString() + "\"");
-                break;
-            }
-
             nowAction.Exit();
             nowAgentState.actionState = nextStateKey;
             nowAction = actionStates[nowAgentState.actionState];
             nowAction.Start();
+
+            if (c > 100)
+            {
+                Debug.LogError(gameObject.name + " is looping with state transition: \"" +
+                                                 nextStateKey.ToString() +
+                                                 "\" to \"" +
+                                                 nowAction.GetNextAction().ToString() + "\"");
+                break;
+            }
 
             nextStateKey = nowAction.GetNextAction();
             c++;
@@ -72,22 +80,25 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
         nowAction.Update();
     }
     public void UpdateStateFuture()
-    {
+    { 
         states[TimeManager.NowTime - 1] = prevAgentState;
 
-        nowAgentState = new AgentState<AgentAction>(prevAgentState);
+        AgentState<AgentAction> prev = prevAgentState;
+        prevAgentState = nowAgentState;
+
+        nowAgentState = new AgentState<AgentAction>(prev);
         DoAction();
 
         ChangeState(nowAgentState);
     }
     public void UpdateStatePast()
     {
-        if (states.Count != 0)
+        if (TimeManager.NowTime != 0)
         {
-            nowAgentState = states[TimeManager.NowTime];
-            if(TimeManager.NowTime >= 1)
+            nowAgentState = states[TimeManager.NowTime - 1];
+            if(TimeManager.NowTime != 1)
             {
-                prevAgentState = states[TimeManager.NowTime - 1];
+                prevAgentState = states[TimeManager.NowTime - 2];
             }
             else
             {
@@ -95,37 +106,40 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
             }
         }
 
-        ChangeState(prevAgentState);
+        ChangeState(nowAgentState);
     }
 
     private void Start()
     {
         AgentStart();
 
+
         if (TimeManager.NowTime == 0)
         {
-            if (prevAgentState == null)
-            {
-                prevAgentState = new AgentState<AgentAction>();
-            }
+            nowAgentState.lastMoveTime = TimeManager.NowTime;
+            nowAgentState.Energy = (byte)maxStartEnergy;
+            nowAgentState.HP = (byte)maxStartHP;
+            nowAgentState.Insanity = (byte)maxStartInsanity;
+            nowAgentState.InsanityPoints = 0;
+            nowAgentState.XP = 0;
 
-            prevAgentState.lastMoveTime = TimeManager.NowTime;
-            prevAgentState.Energy = (short)maxStartEnergy;
-            prevAgentState.HP = (short)maxStartHP;
-            prevAgentState.Insanity = (short)maxStartInsanity;
+            prevAgentState = nowAgentState;
         }
         else
         {
-            prevAgentState = states[TimeManager.NowTime];
+            nowAgentState = states[TimeManager.NowTime];
+            prevAgentState = states[TimeManager.NowTime - 1];
         }
+
+        
 
         canDoAction = true;
         isChangingStateOnUpdate = false;
+        states = new AgentState<AgentAction>[TimeManager.EndTime]; //total days count
 
         TimeManager.AddAgent(this);
-        states = new Dictionary<int, AgentState<AgentAction>>();
 
-        nowAction = actionStates[prevAgentState.actionState];
+        nowAction = actionStates[nowAgentState.actionState];
         nowAction.Start();
     }
 
@@ -144,11 +158,14 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
 
     public void ChangeLocation(HexCell cell)
     {
-        HexCell cellNow = prevAgentState.onCell;
+        HexCell cellNow = nowAgentState.onCell;
         if(cellNow != null)
             cellNow.Unit = null;
         
-        prevAgentState.onCell = cell;
+        nowAgentState.onCell = cell;
+
+        if (TimeManager.NowTime == 0)
+            prevAgentState = nowAgentState;
 
         transform.localPosition = cell.Position;
         cell.Unit = this;
@@ -156,12 +173,17 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
 
     public void ValidateLocation()
     {
-        transform.localPosition = prevAgentState.onCell.Position;
+        transform.localPosition = nowAgentState.onCell.Position;
     }
 
     public GameObject GetGameObject()
     {
         return gameObject;
+    }
+
+    public HexCell GetCell()
+    {
+        return nowAgentState.onCell;
     }
 
     public void SetState(AgentState<AgentAction> state)
@@ -185,7 +207,9 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
             {
                 ChangeLocation(state.onCell);
                 state.lastMoveTime = TimeManager.NowTime;
-                state.Energy -= 1;
+
+                if (state.Energy != 0)
+                    state.Energy--;
             }
             else
             {
@@ -193,7 +217,12 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
                 state.lastMoveTime = prevAgentState.lastMoveTime;
             }
         }
-        
+
+        canDoAction = (state.Energy != 0);
+
+        if (state.HP == 0)
+            Die();
+
         nowAction = actionStates[state.actionState];
         prevAgentState = state;
     }
@@ -219,54 +248,49 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
 
     public void ChangeHP(int points)
     {
-        nowAgentState.HP = (short)(nowAgentState.HP - points);
+        int nowHP = (int)nowAgentState.HP + points;
 
-        if (nowAgentState.HP < 0)
+        if (nowHP < 0)
             Die();
 
-        if (nowAgentState.HP > maxStartHP)
-            nowAgentState.HP = (short)maxStartHP;
+        if (nowHP > maxStartHP)
+            nowHP = maxStartHP;
+        
+        nowAgentState.HP = (byte)(nowHP);
     }
 
     public void ChangeEnergy(int points)
     {
-        nowAgentState.Energy = (short)(nowAgentState.Energy - points);
+        int nowEn = (int)(nowAgentState.Energy) + points;
+        Debug.Log(nowEn);
 
-        if (nowAgentState.Energy <= 0)
+        if (nowEn <= 0)
         {
             canDoAction = false;
-            nowAgentState.Energy = 0;
+            nowEn = 0;
         }
         else
         {
             canDoAction = true;
         }
 
-        if (nowAgentState.Energy > maxStartEnergy)
-            nowAgentState.Energy = (short)maxStartEnergy;
+        if (nowEn > maxStartEnergy)
+            nowEn = maxStartEnergy;
+        
+        nowAgentState.Energy = (byte)(nowEn);
     }
 
     public void ChangeInsanity(int points)
     {
-        nowAgentState.Insanity = (short)(nowAgentState.Insanity - points);
+        int nowIns = (int)nowAgentState.Insanity + points;
         
-        if (nowAgentState.Insanity > maxStartInsanity)
+        if (nowIns > maxStartInsanity)
         {
             nowAgentState.InsanityPoints++;
-            nowAgentState.Insanity = 0;
+            nowIns = 0;
         }
             
-    }
-
-    public void ChangeAttitude(IAgent agent, int points)
-    {
-        nowAgentState.attitudeTo[agent] += (short)points;
-
-        if (nowAgentState.attitudeTo[agent] < minAttitude)
-            nowAgentState.attitudeTo[agent] = minAttitude;
-
-        if (nowAgentState.attitudeTo[agent] > maxAttitude)
-            nowAgentState.attitudeTo[agent] = maxAttitude;
+        nowAgentState.Insanity = (byte)(nowIns);
     }
 
     public virtual void SaveState(BinaryWriter writer, int time)
@@ -283,20 +307,19 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
     public virtual void LoadState(BinaryReader reader, int time)
     {
         HexCell cell = hexGrid.GetCellByID(reader.ReadInt32());
-        short energy = reader.ReadByte();
-        short XP = reader.ReadByte();
-        short insanity = reader.ReadByte();
-      //short AttitudeToHero = (short)reader.ReadInt32();
+        byte energy = reader.ReadByte();
+        byte XP = reader.ReadByte();
+        byte insanity = reader.ReadByte();
 
         AgentState<AgentAction> state = new AgentState<AgentAction>
                                             (
                                             cell, 
                                             nowAgentState.actionState
                                             );
+
         state.Energy = energy;
         state.XP = XP;
         state.Insanity = insanity;
-      //state.AttitudeToHero = AttitudeToHero;
         states[time] = state;
     }
 }
