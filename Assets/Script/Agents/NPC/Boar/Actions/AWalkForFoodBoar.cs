@@ -1,4 +1,5 @@
 using Script;
+using System.Linq.Expressions;
 using UnityEngine;
 
 class AWalkForFoodBoar : BaseAction<Boar.BoarActions>
@@ -10,15 +11,13 @@ class AWalkForFoodBoar : BaseAction<Boar.BoarActions>
     {
         road = null;
         boar = agent.gameObject.GetComponent<Boar>();
-
-        Debug.Log("Walking for food");
     }
 
     public override void Update()
     {
         HexCell nowCell = agent.nowAgentState.onCell;
 
-        road = HexMath.FindPath(nowCell, boar.searchFood.OnCell);
+        road = HexMath.FindPath(nowCell, boar.searchFood.OnCell, boar.CellsToMoveBitmask.Inverse());
 
         if (road == null)
         {
@@ -33,16 +32,23 @@ class AWalkForFoodBoar : BaseAction<Boar.BoarActions>
     {
         if(boar.searchFood == null || !boar.searchFood.isActiveAndEnabled)
         {
+            boar.searchFood = null;
             return Boar.BoarActions.findFood;
         }
 
-        if(agent.nowAgentState.onCell == boar.searchFood.OnCell)
+        if(boar.searchFood.Use(agent))
         {
-            boar.searchFood.Use(agent);
             return Boar.BoarActions.findFood;
         }
 
-        return agent.nowAgentState.actionState;
+        if (boar.SeeAgents.IsSeeAgents() &&
+           agent.nowAgentState.HP > agent.MaxStartHP / 2 &&
+           agent.nowAgentState.Energy > agent.MaxStartEnergy / 4)
+        {
+            return Boar.BoarActions.runFromAgents;
+        }
+
+        return Boar.BoarActions.walkForFood;
     }
 
     public override Boar.BoarActions GetNextActionOnFrameUpdate()

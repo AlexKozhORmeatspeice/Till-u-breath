@@ -9,7 +9,7 @@ public class WorkerAgent : Agent<WorkerAgent.WorkerActions>
         walk,
         work
     }
-
+    [Header("Worker vars")]
     [SerializeField] private int timeToWork;
     [SerializeField] private Places workPlace;
 

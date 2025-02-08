@@ -11,8 +11,8 @@ public abstract class Item : MonoBehaviour, IPooledObj
     private HexCell onCell;
     public HexCell OnCell => onCell;
 
-    public abstract void Use(IAgent agent);
-    public abstract void Use(HexCell cell);
+    public abstract bool Use(IAgent agent);
+    public abstract bool Use(HexCell cell);
 
     public virtual void OnObjectSpawn()
     {

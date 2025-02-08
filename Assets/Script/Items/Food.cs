@@ -20,22 +20,24 @@ public class Food : Item
 
         spawnTime = TimeManager.NowTime;
     }
-    public override void Use(IAgent agent)
+    public override bool Use(IAgent agent)
     {
         if(OnCell != null && HexMath.Distance(agent.GetCell(), OnCell) > 1)
         {
-            return;
+            return false;
         }
 
         agent.ChangeHP(GetHP);
         agent.ChangeEnergy(GetEN);
 
         gameObject.SetActive(false);
+        return true;
     }
 
-    public override void Use(HexCell cell)
+    public override bool Use(HexCell cell)
     {
         Drop(cell);
+        return true;
     }
 
 

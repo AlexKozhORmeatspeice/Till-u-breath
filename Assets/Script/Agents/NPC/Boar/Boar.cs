@@ -11,24 +11,31 @@ public class Boar : Agent<Boar.BoarActions>
     {
         walk,
         findFood,
-        runFromHero,
-        attackHero,
+        runFromAgents,
+        attackAgent,
         walkForFood,
         digForFood
     }
+
     [Header("Vars Boar")]
-    [SerializeField] private HexCellType cellMoveType;
+    [SerializeField] private List<HexCellType> cellToMoveTypes;
+    [SerializeField] private List<AgentName> enemyList;
     [SerializeField] private int searchFoodRadius = 12;
     [SerializeField] private int searchEnemyRadius = 10;
     [Header("Randomness")]
     [SerializeField][Range(0.0f, 1.0f)] private float chanceToFindFood = 0.3f;
 
-    public HexCellType CellMoveType => cellMoveType;
+    private VisibleAgents seeAgents;
+    private CellTypesBitmask cellsToMoveBitmask;
+    
+    [NonSerialized] public Food searchFood;
+    [NonSerialized] public IAgent attackAgent;
+    
     public int SearchFoodRadius => searchFoodRadius;
     public int SearchEnemyRadius => searchEnemyRadius;
     public float ChanceToFindFood => chanceToFindFood;
-
-    [NonSerialized] public Food searchFood;
+    public VisibleAgents SeeAgents => seeAgents;
+    public CellTypesBitmask CellsToMoveBitmask => cellsToMoveBitmask;
 
     protected override void AgentStart()
     {
@@ -36,10 +43,14 @@ public class Boar : Agent<Boar.BoarActions>
         actionStates[BoarActions.findFood] = new AFindFoodBoar(BoarActions.findFood, this);
         actionStates[BoarActions.walkForFood] = new AWalkForFoodBoar(BoarActions.walkForFood, this);
         actionStates[BoarActions.digForFood] = new ADigForFoodBoar(BoarActions.digForFood, this);
+        actionStates[BoarActions.runFromAgents] = new ARunFromAgentsBoar(Boar.BoarActions.runFromAgents, this);
 
         nowAgentState.actionState = BoarActions.walk;
 
         searchFood = null;
+
+        seeAgents = new VisibleAgents(this, new AgentsBitmask(enemyList), searchEnemyRadius);
+        cellsToMoveBitmask = new CellTypesBitmask(cellToMoveTypes);
     }
 
     protected override void ChangeState(AgentState<BoarActions> state)

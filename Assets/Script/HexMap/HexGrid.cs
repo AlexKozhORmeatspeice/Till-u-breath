@@ -103,6 +103,9 @@ public class HexGrid : MonoBehaviour
         HexCoordinates coordinates = HexCoordinates.FromPosition(pos);
         
         int ind = coordinates.X + coordinates.Z * cellCountX + coordinates.Z / 2;
+        if (ind > cellCountX * cellCountZ - 1)
+            return null;
+
         return cells[ind];
     }
 

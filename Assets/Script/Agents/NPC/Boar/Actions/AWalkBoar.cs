@@ -1,4 +1,6 @@
 ﻿using Script;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 class AWalkBoar : BaseAction<Boar.BoarActions>
@@ -16,7 +18,7 @@ class AWalkBoar : BaseAction<Boar.BoarActions>
         HexCell nowCell  = agent.nowAgentState.onCell;
         HexCell moveCell = agent.nowAgentState.onCell.GetNeighbor(dir);
         
-        if(moveCell != null && moveCell.CellType == boar.CellMoveType)
+        if(moveCell != null && HexMath.FindPath(nowCell, moveCell, boar.CellsToMoveBitmask.Inverse()) != null)
         {
             agent.nowAgentState.onCell = moveCell;
         }
@@ -24,12 +26,17 @@ class AWalkBoar : BaseAction<Boar.BoarActions>
 
     public override Boar.BoarActions GetNextAction()
     {
-        /*if(agent.nowAgentState.Energy <= agent.MaxStartEnergy / 2 || agent.nowAgentState.HP < agent.MaxStartHP)
+        if(agent.nowAgentState.Energy <= agent.MaxStartEnergy / 2 || agent.nowAgentState.HP < agent.MaxStartHP)
         {
             return Boar.BoarActions.findFood;
-        }*/
+        }
 
-        return agent.nowAgentState.actionState;
+        if(boar.SeeAgents.IsSeeAgents())
+        {
+            return Boar.BoarActions.runFromAgents;
+        }
+
+        return Boar.BoarActions.walk;
     }
 
     public override Boar.BoarActions GetNextActionOnFrameUpdate()

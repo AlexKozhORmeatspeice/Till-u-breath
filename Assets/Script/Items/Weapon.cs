@@ -11,13 +11,15 @@
         damage = 10;
     }
 
-    public override void Use(IAgent agent)
+    public override bool Use(IAgent agent)
     {
         agent.ChangeHP(-damage);
+        return true;
     }
 
-    public override void Use(HexCell cell)
+    public override bool Use(HexCell cell)
     {
+        return true;
         //maybe in a future there would be some logic about destroying objects
     }
 }

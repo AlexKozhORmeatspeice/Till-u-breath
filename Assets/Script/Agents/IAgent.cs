@@ -11,6 +11,7 @@ public interface IAgent
 
     public GameObject GetGameObject();
     public HexCell GetCell();
+    public AgentName GetAgentName();
 
     public void ChangeHP(int points);
     public void ChangeEnergy(int points);

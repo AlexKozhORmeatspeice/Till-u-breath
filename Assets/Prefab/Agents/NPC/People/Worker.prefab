@@ -150,6 +150,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 759f97514fef4469bfd9d99904aa6e2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxStartHP: 100
+  maxStartEnergy: 100
+  maxStartInsanity: 100
+  maxStartSpeed: 1
+  addRandomnessInMove: 0
+  agentName: 4
   timeToWork: 3
   workPlace: 3
   lastTimeMove: 0

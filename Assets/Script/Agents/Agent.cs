@@ -29,10 +29,11 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
     private const int maxAttitude = 50;
     [Header("Vars")]
     [SerializeField] private bool addRandomnessInMove = false;
+    [SerializeField] private AgentName agentName;
 
     private bool canDoAction;
 
-    bool isChangingStateOnUpdate;
+    bool isChangingState;
     protected HexGrid hexGrid;
     
     private AgentState<AgentAction>[] states;
@@ -41,7 +42,6 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
 
     protected Dictionary<AgentAction, BaseAction<AgentAction>> actionStates = new Dictionary<AgentAction, BaseAction<AgentAction>>();
     private BaseAction<AgentAction> nowAction;
-
     public bool CanDoAction => canDoAction;
     public HexGrid HexGrid => hexGrid;
     public int MaxStartHP => maxStartHP;
@@ -56,7 +56,7 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
 
         AgentAction nextStateKey = nowAction.GetNextAction();
         int c = 0;
-
+        
         while(!nextStateKey.Equals(nowAgentState.actionState)) //to transition in one turn between multiple states
         {
             nowAction.Exit();
@@ -75,16 +75,18 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
 
             nextStateKey = nowAction.GetNextAction();
             c++;
+
+            Debug.Log("At the time " + TimeManager.NowTime.ToString() + " agent \"" + gameObject.name + "\" started: " + nowAgentState.actionState.ToString());
         }
+
 
         nowAction.Update();
     }
     public void UpdateStateFuture()
-    { 
+    {
         states[TimeManager.NowTime - 1] = prevAgentState;
 
         AgentState<AgentAction> prev = prevAgentState;
-        prevAgentState = nowAgentState;
 
         nowAgentState = new AgentState<AgentAction>(prev);
         DoAction();
@@ -113,7 +115,6 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
     {
         AgentStart();
 
-
         if (TimeManager.NowTime == 0)
         {
             nowAgentState.lastMoveTime = TimeManager.NowTime;
@@ -134,7 +135,6 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
         
 
         canDoAction = true;
-        isChangingStateOnUpdate = false;
         states = new AgentState<AgentAction>[TimeManager.EndTime]; //total days count
 
         TimeManager.AddAgent(this);
@@ -186,6 +186,11 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
         return nowAgentState.onCell;
     }
 
+    public AgentName GetAgentName()
+    {
+        return agentName;
+    }
+
     public void SetState(AgentState<AgentAction> state)
     {
         ChangeState(state);
@@ -193,8 +198,19 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
 
     protected virtual void ChangeState(AgentState<AgentAction> state)
     {
+        if (state.HP == 0)
+        {
+            Die();
+            return;
+        }
+
+        canDoAction = (state.Energy != 0);
+        if (!canDoAction)
+            return;
+        
         HexCell nowCell = prevAgentState.onCell;
         HexCell moveCell = state.onCell;
+        
         if (nowCell != moveCell)
         {
             int rand = 0;
@@ -218,24 +234,22 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
             }
         }
 
-        canDoAction = (state.Energy != 0);
-
-        if (state.HP == 0)
-            Die();
 
         nowAction = actionStates[state.actionState];
         prevAgentState = state;
     }
 
-    private void Update()
+    private void LateUpdate()
     {
+        if (TimeManager.IsPaused)
+            return;
+
         nowAction.OnFrameUpdate();
         OnFrameUpdateAction();
     }
 
     private void OnFrameUpdateAction()
     {
-        isChangingStateOnUpdate = true;
         AgentAction nextStateKey = nowAction.GetNextActionOnFrameUpdate();
         if (!nextStateKey.Equals(nowAction.StateKey))
         {
@@ -243,7 +257,6 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
             nowAction = actionStates[nextStateKey];
             nowAction.Start();
         }
-        isChangingStateOnUpdate = false;
     }
 
     public void ChangeHP(int points)
@@ -262,7 +275,6 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
     public void ChangeEnergy(int points)
     {
         int nowEn = (int)(nowAgentState.Energy) + points;
-        Debug.Log(nowEn);
 
         if (nowEn <= 0)
         {
@@ -289,7 +301,7 @@ public abstract class Agent<AgentAction> : MonoBehaviour, IAgent where AgentActi
             nowAgentState.InsanityPoints++;
             nowIns = 0;
         }
-            
+        
         nowAgentState.Insanity = (byte)(nowIns);
     }
 

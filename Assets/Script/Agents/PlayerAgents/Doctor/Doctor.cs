@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,9 +25,8 @@ public class Doctor : Agent<Doctor.DoctorActions>
     public Color MoveColor => moveColor;
     public Color EndColor => endColor;
 
-    [Header("Script vars")]
-    public int lastTimeMove;
-    public Hero hero;
+    [NonSerialized] int lastTimeMove;
+    [NonSerialized] public Hero hero;
     protected override void AgentStart()
     {
         actionStates[DoctorActions.followHero] = new AFollowHeroDoctor(DoctorActions.followHero, this);

@@ -9,7 +9,6 @@ class ADigForFoodBoar : BaseAction<Boar.BoarActions>
     {
         eatenFood = false;
         boar = agent.GetComponent<Boar>();
-        Debug.Log("Digging");
     }
 
     public override void Update()
@@ -33,6 +32,13 @@ class ADigForFoodBoar : BaseAction<Boar.BoarActions>
         if(eatenFood)
         {
             return Boar.BoarActions.findFood;
+        }
+
+        if(boar.SeeAgents.IsSeeAgents() &&
+           agent.nowAgentState.HP > agent.MaxStartHP / 2 &&
+           agent.nowAgentState.Energy > agent.MaxStartEnergy / 4)
+        {
+            return Boar.BoarActions.runFromAgents;
         }
 
         return agent.nowAgentState.actionState;
@@ -82,7 +88,7 @@ class ADigForFoodBoar : BaseAction<Boar.BoarActions>
         HexCell nowCell = agent.nowAgentState.onCell;
         HexCell moveCell = agent.nowAgentState.onCell.GetNeighbor(dir);
 
-        if (moveCell != null && moveCell.CellType == boar.CellMoveType)
+        if (moveCell != null && HexMath.FindPath(nowCell, moveCell, boar.CellsToMoveBitmask.Inverse()) != null)
         {
             agent.nowAgentState.onCell = moveCell;
         }

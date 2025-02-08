@@ -20,11 +20,12 @@ public class TimeManager : MonoBehaviour
     private static int staticEndTime;
     public static int NowTime => nowTime;
     public static int EndTime => staticEndTime;
+    public static bool IsPaused => timeIsGoing;
     
 
     private static List<IAgent> agents = new List<IAgent>();
 
-    private bool timeIsGoing;
+    private static bool timeIsGoing;
     private bool isInCoroutine;
 
     private const string statesPath = "Assets/Script/Agents/SaveFiles/agentsStates.st";

@@ -50,9 +50,11 @@ MonoBehaviour:
   maxStartInsanity: 100
   maxStartSpeed: 1
   addRandomnessInMove: 1
-  cellMoveType: 0
+  agentName: 5
+  cellToMoveTypes: 00000000
+  enemyList: 00000000010000000200000004000000
   searchFoodRadius: 12
-  searchEnemyRadius: 10
+  searchEnemyRadius: 5
   chanceToFindFood: 0.3
 --- !u!1 &7420714190266546857
 GameObject:

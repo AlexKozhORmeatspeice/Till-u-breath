@@ -6,6 +6,7 @@ using UnityEngine;
 [Serializable]
 public struct AgentState<AgentAction>
 {
+
     public AgentState(HexCell cell, AgentAction state)
     {
         if (cell == null)
@@ -60,7 +61,6 @@ public struct AgentState<AgentAction>
     public byte Insanity;
     public byte InsanityPoints;
     public byte XP;
-
 
     public HexCell onCell
     {

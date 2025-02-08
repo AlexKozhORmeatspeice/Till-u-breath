@@ -9,7 +9,7 @@ class AFindFoodBoar : BaseAction<Boar.BoarActions>
     {
         boar = agent.gameObject.GetComponent<Boar>();
 
-        boar.searchFood = HexMath.FindFoodInRadius(boar.SearchFoodRadius, agent.nowAgentState.onCell);
+        boar.searchFood = HexMath.FindFoodInRadius(agent.nowAgentState.onCell, boar.SearchFoodRadius);
     }
 
     public override void Update()
@@ -37,7 +37,7 @@ class AFindFoodBoar : BaseAction<Boar.BoarActions>
 
     public override Boar.BoarActions GetNextActionOnFrameUpdate()
     {
-        return agent.nowAgentState.actionState;
+        return Boar.BoarActions.findFood;
     }
 
     public override void OnFrameUpdate()

@@ -248,6 +248,9 @@ public class HexCell : MonoBehaviour
     }
     public HexEdgeType GetEdgeType(HexCell otherCell)
     {
+        if (otherCell == null)
+            return HexEdgeType.Flat;
+
         return HexMetrics.GetEdgeType(elevation, otherCell.elevation);
     }
 

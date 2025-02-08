@@ -6,6 +6,7 @@
         Village,
         Nature,
         Factory,
-        HeroBar
+        HeroBar,
+        Road
     }
 }
